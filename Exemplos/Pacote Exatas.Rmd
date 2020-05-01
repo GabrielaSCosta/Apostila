@@ -1,5 +1,5 @@
 ---
-title: "Pacote exatas"
+title: "Pacote Exatas e Bancos de Dados"
 author: "Gabriela, Matheus, Vitor"
 date: "01/05/2020"
 output: html_document
@@ -9,22 +9,77 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# 1. Pacote Exatas
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Essa apostila vem acompanhada de um conjunto de banco de dados que foram reunidos com o objetivo de exemplificar os tópicos que abordaremos mais adiante, e também com o objetivo de se colocar em prática o que foi aprendido. Nós recomendamos fortemente que, ao aprender um novo tópico nos capítulos que seguem, você tente refazer o que foi feito utilizando as
+mesmas funções que serão ensinadas porém em outro conjunto de dados, pois é na prática que realmente se aprende.
+O conjunto de dados **Exatas** foi contruído em formato de um pacote, portanto é necessário instalá-lo para começar a utilizar. Já vimos com instalar um pacote no R quando falamos a respeito do Rcommander, agora introduziremos um novo método de instalação no RStudio, que se refere à como instalar pacotes em formatos de arquivos zipados. Antes de
+tudo, acesse o link: <http://www.est.ufmg.br/~monitoria/material.html>, baixe o arquivo
+“Exatas_0.1.0.tar” e salve na pasta que você preferir.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Na parte de visualização do Rstudio clique em *“Packages -> Install”*, na aba *“Install from”* selecione *“Package Archive File”*, irá abrir uma janela (Caso não abra sozinho clique em  *“Browse. . . ”*), procure pelo pacote na pasta que você o salvou, clique em *“Open-> Install”*.
+Uma vez que o pacote já está instalado, para começar a utilizar basta carregá-lo. Fazemos
+isso da mesma forma que mostramos anteriormente, basta executar o comando abaixo.
 
-```{r cars}
-summary(cars)
+```
+library(Exatas)
+
 ```
 
-## Including Plots
+O pacote Exatas é composto por inúmeros bancos de dados relacionados às enghenharias, ciências da natureza e da terra. Você pode saber mais a respeito de cada um desse bancos de dados consultando o Help do
+R. Para fazer isso você pode explorar a aba “Help” na parte de visualização do RStudio ou simplesmente executar o comando ? acompanhado do nome da função, comando ou banco de dados para o qual você deseja mais informações. Por exemplo, caso estajamos interessados em saber um pouco mais a respeito do banco de dados “carro”, simplesmente excutamos o seguinte comando:
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```
+?carro
+
+```
+Note que na aba “Help” da parte de visualização, aparece uma breve descrição a respeito do banco de dados e de seu formato. Como exercício, execute ?median em seu console ou editor de códigos do R e descubra qual o objetivo desse comando.
+
+# 2. Lendo bancos de dados
+# 2.1
+
+Existem diversas maneiras de se ler bancos de dados no R, podendo ser esses bancos de dados de diversos formatos. Os formatos mais comuns são “.xls”, “.xlsx”, “.txt”, “.csv”, entre outros. Nessa seção mostraremos como ler alguns formatos de bancos de dados no R/Rstudio, usando funções.
+Antes disso, precisamos introduzir a noção de diretório, que nada mais é do que a pasta na qual você está trabalhando, onde seus dados estão salvos e etc. Em geral, o R entende que seu diretório é a pasta na qual você salvou seu script. Para descobrir o seu diretório use o comando:
+
+```
+getwd()
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Ele retornará qual sua pasta de trabalho. Isso significa que todos os arquivos que estiverem salvos nessa pasta serão facilmente encontrados pelo R. Para alterar seu diretório, caso seja necessário, você pode usar o comando:
+```
+setwd("C:/Desktop/Analise/Banco de dados")
+```
+
+Entre parênteses, temos por exemplo, um diretório na pasta “Banco de dados” que está salvo em “Analise” que por sua vez está na área de trabalho do computador (Desktop), nesse exemplo podemos carregar as bases de dados salvas na pasta por meio dos métodos que serão apresentados a seguir.
+Também existe um método alternativo de se alterar o diretório no RStudio, aperte *“Ctrl+Shift+H”* e escolha seu novo diretório na janela que surgirá na sua tela.
+
+# 2.2
+
+Como dissemos anteriormente, existem diversas maneiras de se ler um banco de dados no R, podendo esse banco de dados estar em vários formatos. A seguir mostraremos como ler dados que estão salvos em formato de planilha no Excel (xlsx), formato de texto (txt) e formato csv.
+# 2.2.1 Arquivos Excel
+
+Para ler dados de uma planilha excel é necessário previamente instalar um pacote específico,uma vez que essa funcionalidade não está inicialmente disponível no R. Para isso recomendamos instalar o pacote readxl. Para isto, use o comando abaixo ou algum dos outros métodos de instalação citados anteriormente. Lembre-se que sempre que você quiser utilizar um pacote que já foi instalado é necessário apenas carregá-lo.
+```
+install.packages("readxl")
+library(readxl)
+```
+No pacote readxl existe uma função chamada read_excel() que, como o nome sugere, tem o objetivo de ler arquivos em excel que estão salvos no seu diretório, consulte o Help para mais detalhes. Para trabalhar com um banco de dados no R não basta simplesmente excutar um comando, é preciso também armazenar os dados que você deseja analisar na memória do R. Para isso precisamos criar uma variável, que é simplesmente um espaço na memória no
+qual guardamos valores, bancos de dados ou qualquer análise que julgarmos importante. O comando abaixo lê o banco de dados heart (que deve estar salvo no diretório de trabalho) e o armazena na variável dados. Para atribuir algum objeto à uma variável usamos o sinal de igualdade.
+```
+dados = read_excel("heart.xlsx")
+```
+Como pode ser visto acima, a função read_excel é bem simples de ser usada, basta colocar o nome do arquivo com a extensão (.xlsx) entre aspas e armazenar na variável que deseja.
+
+Note que, caso você esteja usando o RStudio ao invés do R, irá aparecer na parte de histórico a variável que você criou, clicando nela você pode visualizar os dados foram lidos. Outra alternativa é usar o comando abaixo.
+```
+View(dados)
+```
+# 2.2.2 Arquivos “.csv” ou “.txt”
+Para ler arquivos em formato “.csv” ou “.txt” o procedimento é mais simples, uma vez que não é necessário instalar nenhum outro pacote adicional. Usamos a função *read.table()*, veja abaixo:
+
+```
+dados2 = read.table("seeds.txt", header = TRUE)
+```
+Os argumentos passados para a função *read.table* são o nome do arquivo com a extensão e o argumento *header = TRUE*, que indica que seus dados têm cabeçalho, isto é, as colunas possuem um nome específico. Também pode ser necessário indicar mais argumentos na hora de executar uma função, para saber mais sobre isso consulte o Help. Para dados em formato “.csv” podemos usar a mesma função, basta ficar atento para extensão do arquivo e o delimitador das colunas.
