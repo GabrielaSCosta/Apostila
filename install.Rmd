@@ -1,0 +1,71 @@
+---
+title: "Instalacao"
+author: "Gabriela, Matheus, Vitor"
+date: "01/05/2020"
+output: html_document
+---
+
+# Instalação e apresentação do RStudio
+
+### Como instalar o R no seu computador
+
+1. Crie uma pasta no seu computador no local que preferir que o R seja instalado.   .
+2. Baixe o instalador. Para isso, entre em: https://cran.r-project.org/bin/
+windows/base/ e clique em “Download R for Windows”.
+3. Localize o arquivo baixado no seu computador (provavelmente estará na pasta 'Downloads'), execute-o, Escolha um idioma e clique em “OK”.
+5. Clique em “Avançar”.
+6. Aqui, você escolhe a pasta de instalação. Selecione a que você criou.
+7. Continue clicando em “Avançar” e, no fim,  em “Concluir”.
+Pronto, O R está instalado no seu computador!
+
+
+### Como instalar o RStudio em seu computador
+
+1. Entre em https://www.rstudio.com/products/rstudio/download/#download
+2. Selecione, na página, a opção compatível com seu sistema operacional e baixe o arquivo.
+3. Execute o arquivo baixado e siga as instruções, clicando em "Avançar".
+
+OBS: Para conseguir instalar o RStudio, você deve já ter o R instalado no seu computador.
+
+
+### A Interface do RStudio
+
+
+- Editor (canto superior esquerdo): Aqui você digita os comandos que deseja executar no RStudio. Para executá-los, basta apertar as teclas 'CTRL' e 'ENTER' simultaneamente. (para esse painel aparecer, você deve criar ou abrir um script, algo que será ensinado adiante) 
+- Console (canto inferior esquerdo): Aqui vemos os outputs (saídas) dos comandos que rodamos. É possivel digitar e rodar códigos diretamente no console, porém isso não é indicado, pois os comandos lá escritos não ficam salvos.
+- Histórico (canto superior direito): Aqui, ficam salvas as variáveis, funções e demais estruturas que você criou e o histórico de comandos rodado, além das conexões com outros softwares.
+- Visualização (canto inferior direito): Nessa parte você pode visualizar os gráficos que criar no RStudio, além de navegar arquivos no seu computador, visualizar os pacotes instalados, ver ajuda para os comandos e abrir arquivos html locais.
+
+
+
+## A Barra superior
+
+A barra superior do RStudio acessa diversos menus, cada um com várias funções. Eles são:
+
+- File: Comandos associados a arquivos. Aqui você pode criar um novo script indo em "new file> R script", ou abrir um script antigo (Open file e selecionar o script), além de salvá-los, fechá-los e encerrar a sessão do R.
+- Edit: Aqui, você edita o código e o console: você pode desfazer e refazer ações, copiar e colar códigos, limpar saídas e consoles, entre outras funções.
+- View: Nesse menu, se edita a visualização dos painéis: podemos abrir ou fechá-los, dar zoom e alterar seus tamanhos.
+- Plots: Este menu se refere aos gráficos criados no R. Podemos visualizá-los, fechá-los, salvá-los e copiá-los.
+- Session: Aqui você pode iniciar, fechar ou reiniciar sessões do R, além de definir pastas de trabalho.
+- Build: Trata-se de configurações para projetos em R, um tema que não será tocado nesta apostila.
+- Debug: Nesse menu, temos suporte para erros no R.
+- Profile: Se refere a importar configurações do R. também não será abordado.
+- Tools: Permite configurações gerais do R(como visual e atalhos), além de possibilitar a instalação e gerenciamento de pacotes.
+- Help: Aqui podemos buscar ajuda sobre o RStudio e buscar por atualizações.
+
+
+## Pacotes
+
+O R é uma linguagem de programação "Open Source". Isto é, ele permite que qualquer usuário disponibilize funções, métodos e bancos de dados para que a comunidade acesse. Isto é feito através da instalação de pacotes, que pode ser feita pelo menu "Tools>Install Packages" ou utilizando o seguinte comando:
+```
+install.packages("nome_do_pacote")
+```
+
+Para podermos de fato utilizar um pacote instalados, devemos usar um dos dois seguintes comandos (são equivalentes):
+```
+library(nome_do_pacote)
+require(nome_do_pacote)
+```
+-
+
+
