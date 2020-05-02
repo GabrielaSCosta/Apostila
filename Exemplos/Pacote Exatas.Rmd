@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# 1. Pacote  Exatas
+# 1. Pacote   Exatas
 
 Essa apostila vem acompanhada de um conjunto de banco de dados que foram reunidos com o objetivo de exemplificar os tópicos que abordaremos mais adiante, e também com o objetivo de se colocar em prática o que foi aprendido. Nós recomendamos fortemente que, ao aprender um novo tópico nos capítulos que seguem, você tente refazer o que foi feito utilizando as
 mesmas funções que serão ensinadas porém em outro conjunto de dados, pois é na prática que realmente se aprende.
