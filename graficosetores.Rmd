@@ -1,0 +1,47 @@
+---
+title: "GraficosI"
+author: "Gabriela, Matheus, Vitor"
+date: "02/05/2020"
+output: html_document
+---
+# Gráficos no RStudio: Setores.
+
+O RStudio, como um software de análise de dados, nos permite fazer diversos tipos de gráficos e apresenta diversos métodos e pacotes para tal. Nesta apostila, nos focaremos em fazer gráficos no R base, sem nenhum tipo de pacote. 
+
+
+O gráfico de setores, também conhecido como 'pizza', nos permite uma noção visual para a prevalência de certos fatores com relação a outros, e é adequado para variáveis categóricas (qualitativas). Para fazer um gráfico de pizza, devemos gerar uma tabela de frequência com os dados desejados e então, fazê-lo de fato. Veja o exemplo abaixo, utilizando o banco de dados "carro", que se refere a vendas de carro na Arábia Saudita. Nele, decidimos ver quais as marcas mais vendidas por lá:
+```{r}
+library(exatas)
+tabela <- table(carro$car_maker)
+pie(tabela)
+
+```
+
+Caso desejemos mudar a cor dos setores, podemos utilizar o parâmetro "col" e colocar um vetor com as cores desejadas como argumento.
+```{r}
+tabela <- table(carro$car_maker)
+pie(tabela,col=c('slateblue1','tan3','indianred1','grey4','azure3','gray73','lightsteelblue','lightskyblue','grey96','brown','palevioletred2'))
+
+```
+
+Você também pode definir as cores a partir de uma paleta pronta:
+```{r}
+tabela <- table(carro$car_maker)
+pie(tabela,col=blues9)
+
+```
+
+Para dar um título ao gráfico, podemos utilizar o parâmetro main e colocar, entre aspas, o título desejado.
+```{r}
+tabela <- table(carro$car_maker)
+pie(tabela,col=blues9, main="Vendas de carros na Arábia Saudita por marca")
+
+```
+
+Se desejarmos ver quantos carros são vendidos em cada classe, podemos utilizar o parâmetro labels:
+```{r}
+tabela <- table(carro$car_maker)
+pie(tabela,col=blues9, main="Vendas de carros na Arábia Saudita por marca",labels=tabela)
+
+```
+
