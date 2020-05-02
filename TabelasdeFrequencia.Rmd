@@ -1,0 +1,63 @@
+---
+title: "Tabelas de Frequencia - Apostila"
+author: Vitor
+---
+
+4. Análises descritivas
+
+Antes de qualquer análise estatística é fundamental realizar uma boa análise exploratória dos seus dados. Fazemos isso por meio de análises descritivas, que consistem em criar tabelas de frequências, gráﬁcos e medidas de resumo. Nos tópicos a seguir mostraremos como realizar esse tipo de análise no R/RStudio.
+O R possui alguns bancos de dados já carregados. Informações sobre eles podem ser obtidas usando a função help(nome do banco). Usaremos o banco “airquality” para exemplificar a aplicação das funções que serão apresentadas a seguir. Esse banco de dados traz informações sobre a qualidade do ar em Nova York durante um período do ano de 1973. 
+
+4.1 Tabelas de frequência
+
+A frequência absoluta de uma observação é o número de vezes em que tal observação apareceu na amostra. Uma tabela de frequências contém as informações a respeito das frequências dos diferentes níveis de uma variável. Tomando como base o banco de dados  “airquality”, imagine que você esteja interessado em analisar apenas a temperatura da região no período observado. Seria interessante obter uma tabela de frequência para essa variável. Para isso usamos o comando table. Veja:
+
+```{r}
+table(airquality$Temp)
+
+```
+
+Perceba que para cada valor de temperatura (em Fahrenheit), a tabela mostra em quantos dias essa foi a temperatura média. Caso estejamos interessados na frequência relativa temos duas opções: a primeira é simplesmente dividir o resultado pelo total de pacientes e a segunda é usar a função prop.table. Perceba que o cifrão usado entre o nome do banco de dados e o nome da variável é responsável por ﬁltrar apenas as observações da variável em questão, ou seja, só foram usados os dados sobre o temperatura na execução da função. Veja abaixo o código com as duas opções:
+
+```{r}
+#Opção 1:
+Tab = table(airquality$Temp) #salva a tabela em Tab
+Total = sum(Tab) #soma os valores da tabela
+Tab/Total #frequência absoluta dividido pelo total é igual à frequência relativa
+
+#Opção 2:
+prop.table(airquality$Temp)
+
+```
+
+Experimente executar o código acima para treinar. Note que todo o texto escrito após o # será desconsiderado pelo R. Isso ocorre pois o texto é considerado apenas como um comentário, uma maneira de lembrar o que foi feito no momento em que você criou o script. 
+Também podemos criar uma tabela de contingência, que registra a frequência de observações de 2 ou mais variáveis categóricas. Fazemos isso novamente utilizando o comando table. Suponha que você esteja interessado em verificar se existe uma associação entre a temperatura e o mês do ano. Para isso, basta colocar as duas variáveis como argumento da função table. Observe:
+
+```{r}
+table(airquality$Temp, airquality$Month)
+```
+
+Para cada coluna (mês) temos a frequência absoluta das temperaturas. Observe que nos meses mais frios a frequência é concentrada majoritariamente nos valores mais baixos de temperatura, enquanto nos meses mais quentes ocorre o contrário. Tambem podemos analisar a tabela com as frequências relativas:
+
+```{r}
+Tab = table(airquality$Temp, airquality$Month)
+prop.table(Tab, margin = 2)
+
+```
+
+O argumento margin = 2 indica que a proporção deve somar 100% em cada coluna, ou seja, dado um determinado mês, qual a chance de ocorrer cada valor de temperatura. Se você indicar margin = 1, o total de 100% será obtido em cada linha e caso esse argumento não seja informado a proporção será distribuída em toda tabela.
+
+Em algumas situações, como quando estiver trabalhando com variáveis númericas, será necessário contar o número de observações que estão dentro de um intervalo. No caso do banco de dados utilizado, por exemplo, seria mais visual trabalhar com um intervalo de valores do que com valores separados. Para isso, terá que categorizar a variável em questão e depois colocar os valores em uma tabela de frequência. Para categorizar uma variável contínua no R, você pode usar o comando cut, os argumentos dessa função são as observações, um argumento chamado breaks, em que se armazenam os limites dos intervalos e o argumento labels, que são os nomes que os elementos receberão. Conﬁra:
+
+```{r}
+categorizada <- cut(airquality$Temp, breaks = c(55,70,84,97), 
+labels = c("56-70","70-84","84-97"))
+
+#Aplicando a tabela, temos:
+
+table(categorizada)
+table (categorizada, airquality$Month)
+
+```
+
+Perceba que o gráfico de contingência utilizando valores agrupados ficou muito mais visual nesse caso.
