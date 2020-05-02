@@ -1,0 +1,50 @@
+---
+title: "graficopontos"
+author: "Gabriela, Matheus, Vitor"
+date: "02/05/2020"
+output: html_document
+---
+
+# Gráfico de Dispersão e gráfico de Linhas
+
+Gráficos de dispersão estão entre os mais complexos e são excelentes para mostrar a distribuição conjunta de duas variáveis numéricas. Esse gráfico consiste na representação de cada indivíduo como um ponto no plano cartesiano correspondente ao valor das variáveis no mesmo. Podemos criar um gráfico de dispersão com o comando "plot(variavel_y~variavel_x)". Aqui, utilizaremos a partir do banco de dados 'carro', que traz informações sobre vendas de carros na Arábia Saudita. Podemos, por exemplo, cruzar preço do automóvel por quilometragem do mesmo:
+```{r}
+library(exatas)
+plot(carro$price~carro$kilometers)
+
+```
+
+Para dar título ao gráfico, podemos utilizar o argumento "main", e para definir cor, podemos utilizar "col". Para renomar os eixos, temos os comandos "xlab" e "ylab". Usando o parâmetro "cex", podemos modificar o tamanho dos pontos:
+
+```{r}
+plot(carro$price~carro$kilometers,main="Dispersão de preço do carro e quilometragem",col="darkred",
+     xlab="Quilometragem",ylab="Preço",cex=1.5)
+
+```
+
+
+# Gráfico de Linhas
+
+
+Umm gráfico de linhas é uma excelente maneira de mostrar a progressão de uma variável numérica através do tempo. Para criar um no R, devemos utilizar o comando 'plot()', o mesmo do gráfico de dispersão. Entretanto, devemos alterar um argumento, chamado "type" e devêmos atribuir "l" a ele. No exemplo a seguir, fizemos um gráfico de linhas, utilizando o banco de dados "camada_de_ozônio" , que mostra o estado da camada de ozônio a cada ano entre 1992 e 2015. Decidimos uma linha mostrando a progressão do valor de CFC na camada a cada ano. Observe que parâmetros como 'col', 'main', 'xlab' e 'ylab' ainda funcionam normalmente.
+
+```{r}
+plot(camada_de_ozônio$'CFC - clorofluorcarbonos'~camada_de_ozônio$...1, type="l",main="CFC na camada de ozônio por ano",col="cadetblue4",
+       xlab="Ano",ylab="CFC")
+```
+
+Caso desejemos que além das linhas, apareçam pontos, podemos simplesmente trocar o valor atribuído a type para "b".
+
+```{r}
+plot(camada_de_ozônio$'CFC - clorofluorcarbonos'~camada_de_ozônio$...1, type="b",main="CFC na camada de ozônio por ano",col="cadetblue4",
+       xlab="Ano",ylab="CFC")
+```
+
+Se quisermos colocar duas linhas distintas para duas variáveis, podemos criar um gráfico para a primeira, e então utilizar o comando "lines" para sobreescrever uma linha em cima do gráfico anterior:
+
+```{r}
+plot(camada_de_ozônio$'CFC - clorofluorcarbonos'~camada_de_ozônio$...1, type="l",main="CFC(azul) e TCA(vermelho) na camada de ozônio por ano",col="cadetblue4",
+       xlab="Ano",ylab= 'Concentração')   # Gráfico anterior
+lines(camada_de_ozônio$'TCA - ácido tricloroacético'~camada_de_ozônio$...1, type="l",main="CFC na camada de ozônio por ano",col="darkred")   
+```
+
