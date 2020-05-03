@@ -47,6 +47,12 @@ prop.table(Tab, margin = 2)
 
 O argumento margin = 2 indica que a proporção deve somar 100% em cada coluna, ou seja, dado um determinado mês, qual a chance de ocorrer cada valor de temperatura. Se você indicar margin = 1, o total de 100% será obtido em cada linha e caso esse argumento não seja informado a proporção será distribuída em toda tabela.
 
+No R Commander:
+
+Primeiro você deve assegurar que as variáveis são do tipo fator, que é como o R interpreta as variáveis categóricas. Para isso vá em Dados -> Modiﬁcação de variáveis no conjunto de dados -> Converter variável numérica para fator Irá surgir uma janela onde você deve selecionar a variável que deseja converter e pode optar por deﬁnir o nome das categorias ou usar números, caso a variável desejada não apareça na lista signiﬁca que o R já reconheceu que essa variável é categórica. Após informar ao R que a variável é categórica vá em Estatísticas -> Resumos-> Distribuições de frequência ou Estatísticas -> Tabelas de Contingência -> Tabela de dupla entrada. Note que a aba "Estatísticas" permite conﬁgurar como você deseja calcular as frequências relativas.
+
+4.1.1 Tabelas de Frequência para variáveis contínuas
+
 Em algumas situações, como quando estiver trabalhando com variáveis númericas, será necessário contar o número de observações que estão dentro de um intervalo. No caso do banco de dados utilizado, por exemplo, seria mais visual trabalhar com um intervalo de valores do que com valores separados. Para isso, terá que categorizar a variável em questão e depois colocar os valores em uma tabela de frequência. Para categorizar uma variável contínua no R, você pode usar o comando cut, os argumentos dessa função são as observações, um argumento chamado breaks, em que se armazenam os limites dos intervalos e o argumento labels, que são os nomes que os elementos receberão. Conﬁra:
 
 ```{r}
@@ -61,3 +67,7 @@ table (categorizada, airquality$Month)
 ```
 
 Perceba que o gráfico de contingência utilizando valores agrupados ficou muito mais visual nesse caso.
+
+No R Commander:
+
+Para categorizar uma variável numérica no R Commander é necessário ir em Dados > Modiﬁcação de variáveis no conjunto de dados... > agrupar em classes uma variável numérica (para criar fator)... na janela que abrirá é possível escolher a variável que deseja categorizar, o nome da nova variável, o número de classes e como elas serão separadas e posteriormente o nome de cada classe. Após a categorização, para tabelar as frequências basta seguir o passo a passo anterior com a nova variável criada.
