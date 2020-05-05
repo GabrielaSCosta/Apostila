@@ -1,0 +1,137 @@
+---
+title: "Distribuições de Probabilidade"
+author: "Gabriela, Matheus, Vitor"
+date: "04/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<div style="text-align: justify">
+
+Além das análises utilizando estatísticas descritivas, o R contém pacotes que nos permitem trabalhar com probabilidades. Ao longo das disciplinas de estatística, vamos nos deparar com diversos exercícios de probabilidade, e o R é uma boa ferramenta para se fazer conferências referentes aos cálculos feitos nestes exercícios. Além do mais, a probabilidade no R amplia nossas possibilidades no âmbito dos estudos em que queremos checar o quão provável é a ocorrência de um evento, mas nem sempre conseguimos encontrar tais probabilidades efetuando cálculos à mão. Neste tópico vamos abordar três distribuições conhecidas, são elas: Poison (Variável discreta), Binomial (Variável discreta) e Normal (Variável contínua). Nos pacotes referentes a cada modelo encontramos funções que calculam os quantis das distribuições e probabilidades exatas, dados os parâmetros de cada distribuição.
+
+## 5.1 Binomial
+
+Um dos principais modelos discretos de probabilidade é o modelo *Binomial*. Quando possuímos uma sequência de *n* experimentos independentes entre si,com variáveis binárias como resposta (sucesso ou fracasso), dada uma determinada probabilidade constante de sucesso, podemos obter a probabilidade de ocorrência de *k* sucessos através da distribuição binomial. 
+
+**Contextualizando** 
+
+Em uma fábrica de empacotar café, espera-se que o peso do produto final esteja entre 498 e 502 gramas. Cerca de 90% das embalagens continham a quantidade de café dentro dos padrões desejados. Se escolhermos aleatoriamente 10 embalagens, podemos muito bem encontrar 10 pacotes de café com o peso aceitável. Entretanto, pode ser também que, na nossa amostra, nenhum pacote esteja dentro desse padrão.
+
+Mas como mensurar as probabiliidades desses eventos? Eles são prováveis ou não? Podemos perfeitamente calcular as probabilidades desejadas usando o modelo binomial: neste caso, nosso n seria igual a 10 e p seria 0.90, assumindo que a exposição referente quantidade de café seja independente para cada indivíduo da nossa amostra. 
+
+$$ P(X=k) = \frac{n!}{k!(n-k)!}p^k(1-p)^{n-k}$$
+### 5.1.1 Função dbinom 
+
+Suponha que na nossa amostra de 10 pacotes, n = 10, estejamos interessados na probabilidade de encontrarmos 8 pacotes com peso ideal, k =8, com p =0.90. Calculamos a probabilidade P(X = 8 ) da seguinte maneira:
+
+```{r echo = FALSE}
+c= dbinom(1:10, size = 10, 0.90, log = FALSE)
+barplot(c, 1:10, col= c("8","8","8", "8","8","8","8",'forestgreen', "8","8","8"), main = 'Binomial (n = 10, p = 0.90)', sub= 'P( X= 8)',xlab = "k" , ylab = "P(X=k)")
+```
+
+
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+dbinom(x = 8, size = 10, prob = 0.9)
+```
+
+E para P(X =9)?
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+dbinom(x = 9, size = 10, prob = 0.9)
+```
+Repare que o argumento size em dbinom representa o número de replicações do experimento (peso ideal ou não), referente ao parâmetro *n* da binomial.
+
+### 5.1.2 Função pbinom 
+
+Agora, suponha o mesmo contexto do exemplo anterior. Porém, desta vez, queremos encontrar a probabilidade de no máximo oito pacotes da nossa amostra terem o peso ideal, ou seja, estamos interessados na probabilidade acumulada da binomial com n = 10 e p = 0.90 avaliada no caso em que X = 8. No exemplo anterior estávamos interessados na probabilidade da ocorrência de 8 sucessos, e agora, buscamos a probabilidade da ocorrência de 8, 7,..., 2, 1 e 0 sucessos, P(X ≤ 8).
+
+
+```{r echo = FALSE}
+c= dbinom(1:10, size = 10, 0.90, log = FALSE)
+barplot(c, 1:10, col= c('forestgreen','forestgreen','forestgreen','forestgreen','forestgreen','forestgreen','forestgreen','forestgreen', "8","8","8"), main = 'Binomial (n = 10, p = 0.90)', sub= 'P( X ≤ 8)',xlab = "k" , ylab = "P(X=k)")
+```
+
+
+Sendo assim:
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+pbinom(q = 5, size = 10, prob = 0.9)
+```
+Como P(X ≤5)= P(X =5)+P(X =4)+P(X =3)+P(X =2)+P(X =1)+P(X =0), repare que se calcularmos as probabilidades separadamente utilizando dbinom e somarmos todas, devemos encontrar o mesmo resultado obtido com o comando *pbinom*. 
+
+Veja:
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+
+dbinom(x = 8, size = 10, prob = 0.90)+
+dbinom(x = 7, size = 10, prob = 0.9)+ 
+dbinom(x = 6, size = 10, prob = 0.9)+ 
+dbinom(x = 5, size = 10, prob = 0.9)+
+dbinom(x = 4, size = 10, prob = 0.9)+ 
+dbinom(x = 3, size = 10, prob = 0.9)+ 
+dbinom(x = 2, size = 10, prob = 0.9)+ 
+dbinom(x = 1, size = 10, prob = 0.9)+
+dbinom(x = 0, size = 10, prob = 0.9)
+```
+
+E se quisermos obter P(X > 8) ?
+
+Neste caso, queremos descobrir a probabilidade de mais de pacotes de café terem o peso ideal.
+
+```{r echo = FALSE}
+c= dbinom(1:10, size = 10, 0.90, log = FALSE)
+barplot(c, 1:10, col= c("8","8","8", "8","8","8","8","8",'forestgreen', 'forestgreen', 'forestgreen'), main = 'Binomial (n = 10, p = 0.90)', sub= 'P( X > 8)',xlab = "k" , ylab = "P(X=k)")
+```
+
+Sabemos que P(X >8)=1−P(X ≤ 8), então:
+
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+1 - pbinom(q = 8, size = 10, prob = 0.9)
+```
+
+O comando *pbinom* nos fornece uma facilidade que nos permite obter a mesma probabilidade encontrada acima. Basta utilizar o parâmetro *lower.tail* como “FALSE”. 
+
+Veja:
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+pbinom(q = 8, size = 10, prob = 0.9, lower.tail = FALSE)
+```
+Se o comando *lower.tail* não for especiﬁcado, o R vai interpretá-lo como “TRUE”, calculando a probabilidade dos valores acumulados à esquerda, P(X ≤8). Defenindo o parâmetro como “FALSE”, o R retorna a probabilidade dos valores acumulados à direita, P(X > 8).
+
+### 5.1.3 Função qbinom 
+
+A função qbinom nos fornece o caminho “inverso” da função *dbinom*. Quando utilizamos qbinom estamos interessados em obter os quantis da distribuição binomial. Ou seja, se queremos o quantil referente ao percentil de ordem 0.95,estamos interessados num determinado valor de sucessos que seja maior do que 95% dos valores de sucesso possíveis. 
+
+Exemplo:
+
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+qbinom(p = 0.95, size = 10, prob = 0.9)
+```
+
+Nos exemplos anteriores, mostramos que na binomial de tamanho 10 e p = 0.90 , a probabilidade de sucessos associada a x =8 é 0.1937102. Portanto, se utilizarmos a função *qbinom(p =0.1937102, size = 10, prob = 0.90)*, devemos obter o valor 8 como resposta.
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+qbinom(p =0.1937102, size = 10, prob = 0.90)
+```
+
+
+### 5.1.4 Função rbinom 
+
+Por motivo de curiosidade, vamos introduzir a funcionalidade da função rbinom para exempliﬁcar um experimento modelado pela distribuiçao Binomial.
+Suponha que um aluno esteja fazendo uma prova de 20 questões independentes entre si e a probabilidade do estudante acertar cada questão é de 0.4. Utilizando a função rbinom, é como se estivessemos simulando a aplicação da prova para o aluno em questão. Portanto, nosso experimento conterá 20 replicações e a probabilidade de sucesso de cada replicação independente é p =0.4
+
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+rbinom(n = 1, size = 20, prob = 0.4)
+```
+
+Interpretando o resultado: desenvolvemos um experimento (n = 1) com 20 replicações (*size* = 20) e obtivemos 10 sucessos em nosso experimento. Neste caso, o estudante teria acertado 10 questões da prova.
+E se aplicássemos a prova de 20 questões para 5 alunos com a mesma probabilidade igual a 0.4 de acertar uma questão na avaliação?
+
+Nosso experimento seria simulado da seguinte maneira:
+
+```{r eco = TRUE, message= FALSE, warning=FALSE}
+rbinom(n = 5, size = 20, prob = 0.4)
+```
+Interpretando o resultado: desenvolvemos cinco experimentos (n =5) com 20 replicações (*size* =20) cada um e obtivemos 6, 4, 7, 9 e 10 sucessos em nossos experimentos. Através dessa função, conseguimos simular nosso experimento da Binomial quantas vezes desejarmos.
+```

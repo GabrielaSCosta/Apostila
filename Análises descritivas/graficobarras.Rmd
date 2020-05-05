@@ -1,0 +1,74 @@
+---
+title: "Graficos II"
+author: "Gabriela, Matheus, Vitor"
+date: "02/05/2020"
+output: html_document
+--- 
+<div style="text-align: justify">
+
+#Gráficos de Barras
+
+Gráficos de barras são uma boa ferramenta para visualizarmos a frequência da presença de todos os valores que certa variável assumiu. Normalmente, ele é indicado para variáveis categóricas e pode ser feito no R, a partir de uma tabela de frequência, usando o comando "barplot()"
+Como exemplo, usaremos o banco de dados 'carro', que tem como tema vendas de carro na Arábia Saudita. Decidimos avaliar quais as cores de carros mais vendidas.
+```{r}
+library(exatas)
+tabela <- table(carro$color)
+barplot(tabela)
+```
+
+Para definir a cor podemos usar o comando "col" e colocar em sequência a cor desejada entre aspas:
+
+```{r}
+tabela <- table(carro$color)
+barplot(tabela,col="powderblue")
+
+
+```
+
+Caso desejemos colocar uma cor distinta para cada barra, podemos criar um vetor com uma cor para cada barra:
+
+```{r}
+tabela <- table(carro$color)
+barplot(tabela,col=c("beige",'grey10','tan4','forestgreen','gray20','gray75','white'))
+
+
+```
+
+
+Para dar um título ao gráfico, podemos utilizar o argumento "main":
+
+
+```{r}
+tabela <- table(carro$color)
+barplot(tabela,col=c("beige",'grey10','tan4','forestgreen','gray20','gray75','white'),main=" Cores de carro mais vendidas na Arábia Saudita")
+
+
+```
+
+Também é possível dar nome ao eixo y e definir limites de vetor para ele (um vetor indo do mínimo ao máximo), por meio dos argumentos "ylab" e "ylim" (Obs: para fazer o mesmo no eixo x, é análogo, apenas trocando xlab e xlim por ylab e ylim)
+
+```{r}
+tabela <- table(carro$color)
+barplot(tabela,col=c("beige",'grey10','tan4','forestgreen','gray20','gray75','white'),main=" Cores de carro mais vendidas na Arábia Saudita",ylab='Frequência',ylim=c(0,250))
+```
+
+Também é possível fazer gráficos de barra para variáveis conjuntas. Por exemplo, podemos ver a frequência de cada fabricante para cada tipo de transmissão Para isso, usamos tabelas de contingência como argumento do gráfico.
+
+```{r}
+tabcont <- table(carro$car_maker,carro$transmission)
+barplot(tabcont,main="Marcas de carro mais vendidas na Arábia Saudita por tipo de transmissão ",ylab='Frequência')
+```
+
+Veja que não conseguimos saber qual cor é associada a cada marca. Para isso, precisamos de uma legenda, que pode ser criada colocando como TRUE o argumento "legend":
+```{r}
+tabcont <- table(carro$car_maker,carro$transmission)
+barplot(tabcont,main=" Marcas mais vendidas na Arábia Saudita por tipo de transmissão",ylab='Frequência',legend=TRUE)
+```
+
+Caso desejemos trocar a disposição das barras para um mesmo tipo de transimssão (de empilhadas para lado a lado), podemos colocar o argumento "beside" como TRUE.
+
+
+```{r}
+tabcont <- table(carro$car_maker,carro$transmission)
+barplot(tabcont,main=" Marcas mais vendidas na Arábia Saudita por tipo de transmissão",ylab='Frequência',legend=TRUE,beside=TRUE)
+```

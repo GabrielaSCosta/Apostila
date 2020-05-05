@@ -1,0 +1,15 @@
+---
+title: "Distribuições de Probabilidade no R commander"
+author: "Gabriela, Matheus, Vítor"
+output: html_document
+---
+
+5.5 Distribuições de Probabilidade no R Commander
+
+As funções apresentadas neste capítulo também podem ser utilizadas no R Commander, e de maneira bem simples. Para executar as funções desejadas basta clicar em “Distribuições”, depois escolher o tipo de distribuição desejada (Contínua ou Discreta), em seguida selecionar a distribuição desejada (Normal, Binomial, Poisson etc) e por ﬁm, clicar na função que será processada. Suponha que queiramos utilizar a função qnorm através do R Commander:
+
+Distribuições -> Distribuições Contínuas -> Distribuição Normal -> Quantis da Normal...
+
+Depois de seguir esses passos, basta deﬁnir os parâmetros da distribuição e o quantil desejado. Agora, suponha que queiramos utilizar a função pbinom através do R Commander:
+
+Distribuições -> Distribuições Discretas -> Distribuição Binomial -> Probabilidades das caudas da Binomial...

@@ -4,7 +4,7 @@ author: "Gabriela, Matheus, Vitor"
 date: "01/05/2020"
 output: html_document
 ---
-
+<div style="text-align: justify">
 # Instalação e apresentação do RStudio
 
 ### Como instalar o R no seu computador

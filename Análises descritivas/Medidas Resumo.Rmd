@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 <div style="text-align: justify">
-## 1. Medidas de Resumo 
+## 4.2. Medidas de Resumo 
 
 As medidas de resumo são algumas informações que nos ajudam a resumir importantes características da amostra em um único valor. No decorrer da seção será mostrado como calcular tais medidas no R e suas respectivas interpretações.
 
-### 1.2. Média
+### 4.2.1. Média
 
 A média é uma das mais conhecidas medidas de resumo. Assim como sugere o nome, ela é o valor que estima em média onde os valores da amostra se encontram. Para calculá-la, utiliza-se a seguinte fórmula:
 
@@ -52,7 +52,7 @@ by(carro$price,carro$condition, mean)
 ```
  Logo, a média de preço dos carros novos é de R\$ 98.500,00, enquanto que o dos usados é de R\$ 35.262,59.
  
-### 1.3 Mediana 
+### 4.2.2 Mediana 
 
 A *mediana* é uma medida de tendência central cujo objetivo é mostrar o valor da amostra que é maior ou igual a pelo menos metade dos valores observados na amostra, e ao mesmo tempo, menor ou igual a pelo menos metade dessa mesma amostra. Ela também pode ser chamada de segundo quartil ou percentil 50. No R é possível utilizar o comando median que tem como argumento apenas o banco de dados em questão, ou a função *quantile* cujos argumentos serão, o vetor com os valores da amostra e *probs* que deve ser igualado a 0.5. Veja os exemplos a seguir: Um técnico anotou o tempo em dias que determinada máquina precisou de manutenção. Os dados obtidos foram 20, 26, 26, 18 e 30 dias, ele deseja calcular a mediana dessa amostra, logo, utilizou o seguinte argumento:
 ```{r eco = TRUE, warning=FALSE, message=FALSE}
@@ -70,7 +70,7 @@ quantile(amostra, probs = 0.5)
 ```
 Já nesse exemplo, percebe-se que a mediana é igual a 11, porque pelo menos 50% das observações são menores que 11 e pelo menos 50% das observações são maiores que 11. Perceba que 11 é a média entre 10 e 12, esse é o procedimento utilizado quando o tamanho da amostra é par.
 
-### 1.4 Quartis 
+### 4.2.3 Quartis 
 
 Como dito na seção anterior, a mediana também é chamada de segundo quartil, mas também existem outros dois quartis, o primeiro e terceiro, que representam respectivamente os valores que são maiores que pelo menos 25% e 75% da amostra. Para calculá-los usando o R, basta utilizar novamente o comando quantile, mas dessa vez usando o argumento probs igual a 0.25 para o primeiro quartil e 0.75 para o terceiro, mas se você não deﬁnir nenhum valor para esse argumento, função retornará uma tabela com o menor valor, o primeiro, segundo e terceiro quartil e o maior valor da amostra. Veja os exemplos a seguir: 
 
@@ -98,7 +98,7 @@ quantile(amostra)
 ```
 Como a amostra tem tamanho 5, cada percentil é representado por um elemento da amostra.
 
-### 1.5 Função Summary
+### 4.2.4 Função Summary
 Com apenas um comando é possível obter uma tabela com algumas das principais medidas de resumo, no R base isso é possível usando o comando *summary*, que recebe como argumento apenas o banco de dados.
 
 A seguir é mostrado o exemplo: Suponha que uma revista tenha pegado informações sobre os carros de determiada região de Belo Horizonte. Para avaliar a tendência central e a simetria do ano do modelo dos carror da amostra observada, eles utilizaram a seguinte função:*
@@ -109,7 +109,7 @@ summary(carro$year)
 
 *Avaliando os resultados percebe-se que o ano médio do modelo dos carros é igual a 2012 e que a mediana também é igual a 2012. Ao avaliar o primeiro e terceiro quartis, que foram iguais a respectivamente 2008 e 2014, em conjunto dos valores mínimos e máximos da amostra, é possível concluir que pelo menos 25% das observações da amostra são mais antigas que 2008, bem como pelo menos 25% da amostra está no intervalo [2006; 2008]. Como o intervalo entre o primeiro quartil e a mediana é maior que o intervalo entre a mediana e o terceiro quartil, há indícios de que os valores na amostra não são simétricos. A representação gráﬁca utilizada nesse tipo de análise é o Boxplot, em geral facilita a conclusão, o gráﬁco mencionado será visto posteriormente.
 
-### 1.6 Variância e Desvio Padrão
+### 4.2.5 Variância e Desvio Padrão
 
 Nessa seção discutiremos sobre *Desvio Padrão* e *Variância*. O Desvio Padrão é a distância média entre os valores observados na amostra e a média da mesma, como pode-se ver na fórmula abaixo: 
 
@@ -130,7 +130,7 @@ Enquanto a variância é igual a 15.1495 anos.
 
 Repare que esse valor é exatamente igual ao anterior.
 
-### 1.6 Escore Padronizado
+### 4.2.6 Escore Padronizado
 
 Quando se deseja comparar dois valores de diferentes amostras, que têm médias e desvios padrões diferentes, costuma-se padronizar os valores segundo a fórmula a seguir: 
 $$ z_{i} =\frac{ x_{i} −x} {s}$$
@@ -150,7 +150,7 @@ scale(c(44,5,7,3,42))
 ```
 Observe que o valor padronizado de 44 é igual ao calculado anteriormente.
 
-### 1.8 Coeﬁciente de Variação
+### 4.2.7 Coeﬁciente de Variação
 
 Nas seções anteriores vimos que a variância e o desvio padrão são utilizados para avaliar a variação entre os valores de uma amostra, porém se deseja-se comparar a variação em amostras cujos elementos estão em escalas de grandezas totalmente diferentes, como por exemplo se você quiser comparar a variação no peso de um grupo formigas e a variação no peso de um grupo de elefantes, mesmo se a variação no grupo das formigas for maior, isso nunca seria identiﬁcado avaliando apenas a variância ou desvio padrão. Para isso, utilizamos o *Coeﬁciente de Variação*, que calcula o quanto a amostra varia em relação à média, sua fórmula é mostrada a seguir:
 $$ CV = \frac{s∗100\%} {x} $$
@@ -170,7 +170,7 @@ cv2
 ```
 Nesse caso, o coeﬁciente de variação foi igual a 27.18251, logo, podemos concluir que o número de maçãs por macieria varia mais que o número de bananas por bananeira.
 
-### 1.9 Coeﬁciente de Correlação de Pearson 
+### 4.2.8 Coeﬁciente de Correlação de Pearson 
 
 O Coeﬁciente de *Correlação de Pearson* é utilizado quando queremos mensurar o quanto duas variáveis estão relacionadas, ou seja, se o fato de uma das variáveis aumentar faz com que a outra aumente ou diminua. Ele é representado pela letra r, em que -1 < r < 1. Quanto maior o módulo de r, maior a correlação, que pode ser negativa ou positiva. 
 
