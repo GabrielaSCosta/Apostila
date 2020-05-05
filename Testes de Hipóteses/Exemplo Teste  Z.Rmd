@@ -1,0 +1,330 @@
+---
+title: "Exemplo Teste Z"
+author: "Gabriela, Laura e Maria"
+date: "01/11/2019"
+output: html_document
+---
+<div style="margin-bottom:60px;">
+</div>
+
+<div style="text-align: justify">
+A porcentagem média de sódio na composição do vidro de determinada indústria é de 14%, com desvio padrão de 0,8%. Acredita-se que essa porcentagem tenha se alterado após a detecção de uma falha durante a produção do material. Para isso, obtiveram-se 214 amostras, para que se fizesse um teste ao nível de significância de 5%.   
+<div/>
+
+
+<div style="margin-bottom:50px;">
+</div>
+
+Como estamos tratando de um caso em que a variância é conhecida e a população é suficientemente grande, a distribuição de referência para esse teste é a Normal Padrão, como podemos ver a seguir:
+
+$$Z = \frac{\bar{X}-\mu}{\sqrt{\sigma^2/n}} \sim N(0,1)$$
+Nessa distribuição, temos que $\bar{X}$ é a média da variável aleatória, $\mu$ é a média populacional,  $\sigma$ é o desvio padrão populacional e $n$ é o tamanho amostral.
+
+Quando desejamos fazer um teste de hipóteses sob a hipótese nula, ou seja, $H_{0}$, a distribuição da estatística de teste é dada por:
+
+$$Z_{0} = \frac{\bar{X}-\mu_{0}}{\sqrt{\sigma^2/n}} \sim N(0,1)$$
+Portanto, a estatística de teste observada $z_{0}$ a ser aplicada em todos os testes (bilateral, unilateral à esquerda e unilateral à direita) será: 
+$$z_{0} = \frac{\bar{x}-\mu_{0}}{\sqrt{\sigma^2/n}}$$
+Na qual $\bar{x}$ é a média da variável aleatória, $\mu_{0}$  é a média a ser testada,  $\sigma$ é o desvio padrão populacional e $n$ é o tamanho amostral.
+
+<div style="margin-bottom:20px;">
+</div>
+
+Primeiramente, vamos abrir o banco de dados e definir as variáveis.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+require(exatas) #chamando o pacote para a leitura do banco 
+attach(vidro) #este comando anexa o banco, permitindo que suas variáveis sejam acessadas
+
+#definindo variáveis
+
+mi0 = 14           #média que se precisa testar
+media = mean(Na)   #média amotral
+n = length(Na)     #tamanho da amostra
+sigma = 0.8        #desvio padrão populacional
+alpha=0.05         #nível de significância
+
+```
+
+## Teste Bilateral
+Testaremos a diferença entre a média verdadeira $\mu$ e determinada média $\mu_{0}$, tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: \mu &= \mu_{0} \\ 
+H_{A}: \mu &\neq \mu_{0} \\ 
+\\
+H_{0}: \mu &= 14 \\ 
+H_{A}: \mu &\neq 14
+\end{aligned}
+$$
+
+<div style="margin-bottom:30px;">
+</div>
+### Função `z.test`
+Podemos fazer esse teste bilateral usando a função `z.test` ,já que o desvio padrão populacional é conhecido. 
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+require("TeachingDemos") #chamando o pacote para usá-lo
+                         #note que talvez seja necessário instalar o pacote com o comando install.packages("TeachingDemos")
+
+z.test(Na, mu = mi0, alternative = "two.sided", sd = sigma,  n, conf.level = 1-alpha)
+
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística Z, o valor-p, a hipótese alternativa, o intervalo de confiança ao nível (1−α)100% e a média da amostra.
+
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+Os valores críticos são calculados para delimitar a região de rejeição da hipótese nula que está sendo testada. Assim, analisamos se a estatística de teste pertence ou não à região crítica; caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário.
+<div/>
+
+
+<div style="text-align: justify">
+Já os valores críticos são encontrados com $\ z_{\frac{\alpha}{2}}$ para o valor crítico inferior e $z_{{1}-\frac{\alpha}{2}}$ para o superior.
+<div/>
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#calculando estatística de teste
+estteste = (media-mi0)/sqrt(sigma^2/n)
+estteste
+```
+<div style="text-align: justify">
+A estatística de teste encontrada neste exemplo foi -10.828. 
+
+
+```{r}
+#função do quantil
+vc1=  qnorm( alpha/2)
+vc2=  qnorm( 1-alpha/2)
+vc1
+vc2
+
+```
+<div style="text-align: justify">
+Nesse caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que -1.959964(vc1) ou maior que 1.959964(vc2). Como a estatística de teste vale -10.828, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que a quantidade de sódio no vidro, após a falha, é diferente de 14%.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+Podemos usar o intervalo de confiança da média para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $\mu$ contém o valor que está sendo testado $\mu_{0}$. Se o intervalo não contém a média, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+
+$$IC_{\mu}{100(1 − \alpha)\%} = \left[ \bar{x} + z_{\frac{\alpha}{2}}\cdot \sqrt{\frac{\sigma^2}{n}} ;\bar{x} + z_{1- \frac{\alpha}{2}}\cdot \sqrt{\frac{\sigma^2}{n}} \right]$$
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+probs = c(((alpha)/2),(1-alpha/2))
+IC <- media + qnorm( probs, 0 , 1) * sqrt(sigma^2/n)
+IC
+```
+
+Usando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "two.sided" , sd = sigma,  n, conf.level = 1-alpha)$conf.int
+
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para ${\mu}$ é $$IC_{\mu}{95\%} = \left[  13.30067 ; 13.51503 \right]$$. Como a estatística de teste $z_{0}$ não está  contida no intervalo, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que a quantidade de sódio no vidro, após a falha, é diferente de 14%.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira. Para a distribuição bilateral ele é calculado como sendo 2 vezes a probabilidade do quantil $z_{0}$ . Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+<div/>
+
+$$\text{valor-p}= 2\cdot P(Z> |z_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(sigma^2/n)) 
+valor.p = 2*pnorm(estteste)
+valor.p
+```
+
+Utilizando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "two.sided", sd = sigma,  n, conf.level = 1-alpha)$p.value
+
+```
+<div style="text-align: justify">
+O valor-p encontrado foi considerado pequeno (já que é muito menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, podemos concluir que há evidências amostrais de que a quantidade de sódio no vidro, após a falha, é diferente de 14%.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Direito
+Testar se ${\mu}$ é maior que 14
+$$
+\begin{aligned}
+H_{0}: \mu &= \mu_{0} \\ 
+H_{A}: \mu &> \mu_{0} \\
+\\
+H_{0}: \mu &= 14 \\ 
+H_{A}: \mu &> 14
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+
+### Função `z.test`
+Podemos fazer este teste unilateral esquerdo usando a função `z.test` do R:
+```{r}
+z.test(Na, mu = mi0, alternative = "greater" , sd = sigma,  n, conf.level = 1-alpha)
+
+```
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral direito, o valor crítico é encontrado com $z_{\alpha}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vcd= qnorm(alpha) 
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico -1.644854(`vcd`). Sendo assim, como a estatística de teste -10.828 é menor do que esse valor crítico, não rejeitamos $H_{0}$ ao nível de 5% de significância, ou seja, podemos concluir que há evidências amostrais de que a quantidade de sódio no vidro é menor ou igual a 14%.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral direito é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{{\mu}}{100(1 − \alpha)\%} = \left[  \bar{x} + z_{\alpha}\cdot \sqrt{\frac{\sigma^2}{n}}; \text{ } \infty \right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+#calcular o IC
+conf = 1-alpha
+probs = c(alpha, 1)
+IC <- media + qnorm( probs)*sqrt(sigma^2/n)
+IC
+```
+
+Usando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "greater" , sd = sigma,  n, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para \mu é $IC_{\mu}{100(1 − \alpha)\%} = \left[ 13.3179;\text{ } \infty \right]$. Como a estatística de teste $\mu_{0}$=14 está contida no intervalo, não rejeitamos a hipótese nula, ou seja, há evidências amostrais de que a quantidade média de sódio no vidro é menor ou igual a 14%. 
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $z_\alpha$ ser maior que a estatística de teste calculada.
+<div/>
+
+$$\text{valor-p}=  P(Z >| z_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(sigma^2/n))  
+valor.p = pnorm(q=estteste)
+valor.p
+```
+Utilizando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "greater" , sd = sigma,  n, conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p igual a 1 maior do que $\alpha$=0.05. Dessa forma, ao nível de 5% de significância, não rejeitamos $H_{0}$.Assim, podemos concluir que há evidências amostrais de que a quantidade média de sódio no vidro é menor ou igual a 14%.
+
+<div style="margin-bottom:50px;">
+</div>
+
+
+## Teste Unilateral Esquerdo
+Testar se $\mu$ é menor que 14%:
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu &= 14 \\ 
+H_{A}: \mu &< 14  \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+
+### Função `z.test`
+Podemos fazer este teste unilateral esquerdo usando a função `z.test` do R:
+```{r}
+z.test(Na, mu = mi0, alternative = "less" , sd = sigma,  n, conf.level = 1-alpha)
+```
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral esquerdo, o valor crítico é encontrado com $z_{\alpha}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vcd= qnorm(1-alpha) 
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral esquerdo, para concluir o teste de hipótese basta verificar se a estatística de teste é maior ou menor do que o valor crítico 1.644854 (`vce`). Sendo assim, como  a estatística de teste é igual a -10.828, rejeitamos $H_{0}$ a um nível de significância de 5%,  ou seja, há evidências amostrais de que a quantidade média de sódio no vidro produzido por essa indústria é menor do que 14%.
+<div/>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral esquerdo é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{\mu}{100(1 − \alpha)\%} = \left[ - {\infty};\bar{x} + z_{1 -\alpha}\cdot \sqrt{\frac{\sigma^2}{n}}\right]$$
+
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+conf = 1-alpha
+probs = c(0, 1 -alpha )
+IC <- media + qnorm( probs)*sqrt(sigma^2/n)
+IC
+
+```
+
+Usando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "less" , sd = sigma,  n, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu$ é $IC_{\mu}{(95\%)} =\left[-\infty; 13.4978 \right]$. Como a estatística de teste $\mu_{0}$=14 não  está contida no intervalo, rejeitamos a hipótese nula, ou seja, ao nível de 5% de significância há evidências amostrais de que a quantidade de sódio no vidro é menor do que 14%.
+<div/>
+<div style="margin-bottom:30px;">
+</div>
+### Método Valor-p
+<div style="text-align: justify">
+Nesse caso iremos comparar o valor-p - que é a probabilidade do quantil $z_{0}$ -  e o nível de significância.
+<div/>
+$$\text{valor-p}=  P(Z > |z_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(sigma^2/n))  
+valor.p = pnorm(estteste)
+valor.p
+
+```
+Utilizando a função `z.test`:
+```{r}
+z.test(Na, mu = mi0, alternative = "less" , sd = sigma,  n, conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de 1.268158e-27 encontradoé menor do que $\alpha$=0.05.Dessa forma, rejeitamos $H_{0}$ ao nível 5% de significância, ou seja,  há evidências amostrais de que a quantidade de sódio no vidro é menor do que 14%.
+<div/>
+<div style="margin-bottom:50px;">
+</div>

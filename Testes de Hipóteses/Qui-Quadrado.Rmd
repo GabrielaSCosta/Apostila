@@ -1,0 +1,54 @@
+---
+title: "Teste Qui-Quadrado"
+author: "Gabriela, Matheus, Vítor"
+output: html_document
+---
+6.3 Qui-Quadrado
+
+Em geral, os testes qui-quadrado são usados para avaliar se há associação entre variáveis qualitativas. Por exemplo, no banco de dados milsa, considere as variáveis civil e instrucao. A variável civil indica o estado civil do indivíduo (1 = solteiro, 2 = casado) e a variável instrução indica o nível de instrução (1 = 1o grau, 2 = 2o grau, 3 = ensino superior). Suponha que você deseja investigar se o estado civil tem alguma influência no nivel de instrução da pessoa. 
+Para responder a essa pergunta são formuladas as seguintes hipóteses: 
+
+Ho : Estado civil e nivel de instrução são variáveis independentes.
+
+Ha : Estado civil e nivel de instrução não são independentes. 
+
+Para testar essas hipóteses os dados são organizados na tabela de contingência abaixo.
+
+```{r}
+milsa <- read.table("http://www.leg.ufpr.br/~paulojus/dados/milsa.dat", head = T)
+tab = table(milsa$instrucao, milsa$civil) #Tabela com as frequências
+addmargins(tab) #Adiciona os totais
+```
+Temos a seguinte Estatística de Teste:
+
+$$\chi^2 = \sum_{i=1}^n \sum_{j=1}^m \frac {(O_{ij} - E_{ij})^2}{E_{ij}}$$
+Onde "O" é a frequência observada para cada classe, "E" é a frequência esperada, N é o número de linhas da tabela e M o número de colunas. Note que quando as frequências obeservadas são muito próximas da esperada o valor da estatística de teste é próximo de zero. Por outro lado, quando os valores observados são bem distantes do esperado o valor da estatística de teste aumenta.
+
+Para testar a hipótese usamos o fato que  χ2 segue uma distribuição qui-quadrado com (N − 1)(M − 1) graus de liberdade, onde N e M são on números de linhas e de colunas, respectivamente. 
+O valor esperado "E" é obtido realizando o seguinte cálculo: 
+$$\frac{Total\ da\ linha\ x\ Total\ da\ coluna}{Total\ geral}$$ 
+Veja um exemplo considerando a tabela acima:
+$$\ E_{11} = \frac{12\ x\ 16}{36} = 5.333\ Então\ temos\ \frac{(7\ -\ 5.333)^2}{5.333}\ =\ 0.52.$$
+Fazemos esse cálculo para todos os outros termos e encontramos o valor da Estatística de Teste:
+
+$$\sum_{i=1}^n \sum_{j=1}^m \frac {(O_{ij} - E_{ij})^2}{E_{ij}}\ =\ \frac{(7\ -\ 5.333)^2}{5.333}\ +\ ...\ +\ \frac{(3\ -\ 3.333)^2}{3.333}\ =\ 1.9125$$
+Sob o nível de signiﬁcânciade α = 0.05 e 2 graus de liberdade, podemos encontrar a região crítica do teste pelo comando abaixo:
+
+```{r}
+qchisq(p = 0.95, df = 2)
+```
+Como o valor observado não pertence à região crítica não rejeitamos Ho, ou seja, não existem evidências para rejeitar a hipótese de que Estado civil e Nível de instrução sejam variáveis independentes. Para realizar essa mesma análise por meio de um único comando usamos o código abaixo:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+milsa <- read.table("http://www.leg.ufpr.br/~paulojus/dados/milsa.dat", head = T)
+chisq.test(milsa$civil, milsa$instrucao)
+```
+O comando acima nos retorna o valor da estatística de teste igual a 1.9125, e seu p-valor correspondente a ela com 2 graus de liberdade. Considerando um nível de signiﬁcância de α = 0.05, vemos que o p-valor é maior que α logo não devemos rejeitar a hipótese nula.
+
+No R Commander
+
+Para realizar um teste Qui-quadrado no R Commander clique em: 
+
+Estatísticas > Tabelas de Contingência > Tabela de dupla entrada. 
+
+Selecione as variáveis categóricas que se deseja testar a associação ou independência e clique em "Ok".

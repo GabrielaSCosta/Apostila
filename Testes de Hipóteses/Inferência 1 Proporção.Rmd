@@ -1,0 +1,284 @@
+---
+title: "Inferência 1 Proporção"
+output: html_document
+---
+
+Um banco de dados sobre carros na Arábia Saudita com 560 observações apresenta a variável transmissão do carro. Deseja-se investigar, a um nível de 5% de significância, se a proporção de carros com transmissão manual é igual, menor ou maior que 0,15. Para isso, serão realizados testes de hipóteses bilateral, unilateral direito e unilateral esquerdo, respectivamente.
+
+
+Como estamos realizando um teste quanto a proporção de uma característica em uma população,teremos como referência a estatística $\hat{p}$, a proporção amostral.Essa estatística possui uma distribuição aproximadamente Normal, como a seguir:
+
+$$\hat{p} \sim N \left(p,\frac{p(1-p)}{n}\right)$$
+Nessa distribuição, temos que $p$ é a proporção populacional da característica em questão, transmissão manual, e $n$ é o tamanho amostral.
+
+Quando desejamos fazer um teste de hipóteses sob a hipótese nula, ou seja, $H_{0}$, a distribuição de referência passa a ser:
+
+$$\hat{p} \sim N{(p_{0},\frac{p_{0}(1-p_{0})}{n}})$$
+Nesse caso, o que muda é que a proporção populacional passa a ser a que está sendo testada, e dita como verdadeira sob a hipótese nula.
+
+
+Para solucionar o problema,primeiramente, vamos abrir o banco de dados e definir as variáveis.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+require(exatas) #chamando o pacote para a leitura do banco 
+attach(carro) #este comando anexa o banco, permitindo que suas variáveis sejam acessadas
+
+
+#definindo variáveis
+p0=0.15        #proporção que se pretende testar
+pchapeu= table(transmission)[2]/sum(table(transmission)) #proporção amostral
+n = length(transmission) #tamanho da amostra
+alpha=0.05     #nível de significância
+```
+
+## Teste Bilateral
+Testa a diferença entre a proporção verdadeira $p$ e a determinada proporção $p_{0}$, tida como verdadeira sob $H_{0}$.
+
+$$
+\begin{aligned}
+H_{0}: p &= p_{0} \\ 
+H_{A}: p &\neq p_{0} \\ 
+\\
+H_{0}: p &= 0,15 \\ 
+H_{A}: p &\neq 0,15
+\end{aligned}
+$$
+
+### Método Valor Crítico
+
+Os valores críticos são calculados para delimitar a região de rejeição da hipótese nula que está sendo testada. Assim, analisamos se a estatística de teste pertence ou não a região crítica; caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário.
+
+A região crítica pode ser construída de duas maneiras. Na primeira, estabelecemos valores de proporções críticos e a estatística de teste nada mais é que o próprio $\hat{p}$, proporção amostral.A outra maneira seria transformar a distribuição da proporção amostral em uma Normal Padrão, encontrando uma nova estatística de teste.
+
+#### Primeira Maneira
+
+Nesse caso os valores críticos são encontrados com $p_{0} - Z_{(1-\frac{\alpha}{2})}\cdot \sqrt{\frac{p_{0}\cdot{(1-p_{0})}}{n}}$ para o valor crítico inferior e $p_{0} + Z_{1-\frac{\alpha}{2}}\cdot \sqrt{\frac{p_{0}\cdot{(1-p_{0})}}{n}}$para o superior.
+
+A estatística de teste do exemplo nada mais é que a proporção amostral, que vale 0,1071429 .
+
+```{r}
+#encontrando os valores críticos
+vc1= p0-qnorm(1-alpha/2)*sqrt(0.15*(1-0.15)/n)
+vc2=p0+qnorm(1-alpha/2)*sqrt(0.15*(1-0.15)/n)
+vc1
+vc2
+```
+
+Nesse caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que 0,1204261(vc1) ou maior que 0,1795739(vc2). 
+Como a estatística de teste vale 0,1071429 (que é menor do que 0,1204261), rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é diferente de 0,15.
+
+#### Segunda Maneira
+
+Transformando a distribuição da proporção amostral em uma Normal Padrão, temos que:
+
+$$\hat{p} \sim N \left(p,\frac{p(1-p)}{n}\right) \to Z_0 = \frac{\hat{p}-p_0}{\sqrt{\frac{p_0(1-p_o)}{n}}} \sim N(0,1)$$
+
+A partir dessa transformação, devemos calcular a nova estatística de teste:
+
+```{r}
+estteste=(pchapeu-0.15)/sqrt(0.15*0.85/n)
+estteste
+```
+
+A estatística de teste encontrada neste exemplo foi -2.840286.
+
+Já os valores críticos são encontrados com $\ z_{\frac{\alpha}{2}}$ para o valor crítico inferior e $z_{{1}-\frac{\alpha}{2}}$ para o superior.
+
+```{r}
+#encontrando os valores críticos
+vc1= qnorm(alpha/2)
+vc2=qnorm(1-alpha/2)
+vc1
+vc2
+```
+
+Nesse caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que -1.959964(vc1) ou maior que 1.959964(vc2). 
+Como a estatística de teste vale  -2.840286 (que é menor do que -1.959964), rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é diferente de 0,15.
+
+Daqui em diante, usaremos apenas a segunda maneira para solucionar os testes de hipótese.
+
+### Método Intervalo de Confiança
+
+Podemos usar o intervalo de confiança da proporção para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $p$ contém o valor que está sendo testado $p_{0}$. Se o intervalo não contém a proporção, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+$$IC_{p}{100(1 − \alpha)\%} = \left[\hat{p}- z_{(1-\frac{\alpha}{2})} \cdot \sqrt{ \hat{p}\cdot\frac{\hat{p}(1-\hat{p})}{n}} \text{ }  ;\text{ } \hat{p}+ z_{(1-\frac{\alpha}{2})} \cdot \sqrt{\hat{p}\cdot\frac{\hat{p}(1-\hat{p})}{n}}\right]$$
+Mas o intervalo de confiança também pode ser calculado de duas maneiras diferentes. O método otimista é aquele no qual o $\hat{p}$ utilizado para calcular a variância $\sqrt{\hat{p}\cdot\frac{\hat{p}(1-\hat{p})}{n}}$ é substituído pela própria proporção amostral.O método conservador considera que $\hat{p}$ vale 0.5, encontrado assim resultados diferentes.Dessa maneira, não é recomendado utilizar o intervalo de confiança para proporção para realizar testes de hipótese, o faremos apenas para demonstração.
+
+#### Método Otimista
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora,temos:
+```{r echo=TRUE}
+probs= c(-qnorm(1-alpha/2),qnorm(1-alpha/2))
+IC <- pchapeu + probs*sqrt(pchapeu*(1-pchapeu)/n)
+IC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[ 0.08152595  ; 0.13275976 \right]$. Como o valor testado $p_0$ não está  contido no intervalo, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é diferente de 0,15.
+
+#### Método Conservador
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora, temos que:
+
+```{r echo=TRUE}
+probs= c(-qnorm(1-alpha/2),qnorm(1-alpha/2))
+IC <- pchapeu + probs*sqrt(0.5*(1-0.5)/n)
+IC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[ 0.06573106  ; 0.14855465 \right]$. Como o valor testado $p_0$ não está  contido no intervalo, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é diferente de 0,15.
+
+### Método Valor-p
+
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira. Para a distribuição bilateral ele é calculado como sendo 2 vezes a probabilidade da estatística de teste ser ainda mais extrema , menor, do que ela é. Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+
+$$\text{valor-p}= 2\cdot P(Z< |Z_{0}|)$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora, temos que:
+
+```{r echo=TRUE}
+ 
+valor.p = 2*pnorm(estteste)
+valor.p
+```
+
+O valor-p encontrado foi considerado pequeno (já que é muito menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, podemos concluir que há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é diferente de 0,15.
+
+## Teste Unilateral Direito
+
+Testa se a proporção verdadeira $p$ é maior que a proporção $p_{0}$ determinada, tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: p &= p_{0} \\ 
+H_{A}: p &> p_{0} \\
+\\
+H_{0}: p &= 0,15 \\ 
+H_{A}: p &> 0,15
+\end{aligned}
+$$
+
+
+### Método do Valor Crítico
+
+No caso unilateral direito, o valor crítico é encontrado com $z_{1-\alpha}$.
+
+```{r}
+#calculando o valor crítico
+vcd= qnorm(1-alpha) 
+vcd
+```
+
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico 1.644854(`vcd`). Sendo assim, como a estatística de teste -2.840286  é menor do que esse valor crítico, não rejeitamos $H_{0}$ ao nível de 5% de significância, ou seja, podemos concluir que não há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é maior 0,15.
+
+### Método do Intervalo de Confiança
+
+O intervalo para o caso unilateral direito é calculado da seguinte maneira:
+
+$$IC_{p}{100(1 − \alpha)\%} = \left[\hat{p}- z_{(1- \alpha)} \cdot \sqrt{ \hat{p}\cdot\frac{\hat{p}(1-\hat{p})}{n}} \text{ }  ;\text{ } \infty \right]$$
+
+#### Método Otimista
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora,temos:
+
+```{r echo=TRUE}
+EEIC <- pchapeu - qnorm(1-alpha)*sqrt(pchapeu*(1-pchapeu)/n)
+EEIC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[ 0.08564447   ; \text{ } \infty \right]$. Como o valor testado $p_0$ está  contido no intervalo, não rejeitamos a hipótese nula ao nível de significância de 5%, ou seja,não há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é maior do que 0,15.
+
+#### Método Conservador
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora, temos que:
+
+```{r echo=TRUE}
+probs= c(-qnorm(1-alpha/2),qnorm(1-alpha/2))
+IC <- pchapeu - qnorm(1-alpha)*sqrt(0.5*(1-0.5)/n)
+IC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[ 0.07238898 ; \text{ } \infty  \right]$. Como o valor testado $p_0$ está  contido no intervalo, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, não há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é maior do que 0,15.
+
+### Método Valor-p
+
+No caso unilateral direito, o valor-p é apenas a probabilidade do da estatística de teste ser ainda mais extrema, menor, do que ela é. 
+
+$$\text{valor-p}=P(Z< |Z_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+ 
+valor.p = pnorm(estteste)
+valor.p
+```
+
+
+O valor-p encontrado foi considerado pequeno (já que é muito menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, podemos concluir que não há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é maior do que  0,15.
+
+## Teste Unilateral Esquerdo
+
+Testa se a proporção verdadeira $p$ é menor que a proporção $p_{0}$ determinada, tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: p &= p_{0} \\ 
+H_{A}: p &< p_{0} \\
+\\
+H_{0}: p &= 0,15 \\ 
+H_{A}: p &< 0,15
+\end{aligned}
+$$
+
+
+### Método do Valor Crítico
+
+No caso unilateral esquerdo, o valor crítico é encontrado com $z_{alpha}$.
+
+```{r}
+#calculando o valor crítico
+vce= qnorm(alpha) 
+vce
+```
+
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é menor que o valor crítico -1.644854(`vce`). Sendo assim, como a estatística de teste -2.840286  é menor do que esse valor crítico,rejeitamos $H_{0}$ ao nível de 5% de significância, ou seja, podemos concluir que há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é menor  do que 0,15.
+
+### Método do Intervalo de Confiança
+
+O intervalo para o caso unilateral esquerdo é calculado da seguinte maneira:
+
+$$IC_{p}{100(1 − \alpha)\%} = \left[\text{ } \infty ;\hat{p}+ z_{(1- \alpha)} \cdot \sqrt{ \hat{p}\cdot\frac{\hat{p}(1-\hat{p})}{n}} \text{ }  \right]$$
+
+#### Método Otimista
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora,temos:
+
+```{r echo=TRUE}
+EDIC <- pchapeu + qnorm(1-alpha)*sqrt(pchapeu*(1-pchapeu)/n)
+EDIC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[ \text{ } \infty \right ; 0.1286412 ]$. Como o valor testado $p_0$ não está  contido no intervalo,rejeitamos a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é menor do que 0,15.
+
+#### Método Conservador
+
+Fazendo as contas, passo a passo, utilizando o R como uma calculadora, temos que:
+
+```{r echo=TRUE}
+EDIC <- pchapeu +qnorm(1-alpha)*sqrt(0.5*(1-0.5)/n)
+EDIC
+```
+
+Temos que o intervalo de confiança para ${p}$ é $IC_{p}{95\%} = \left[\text{ } \infty ; 0.1418967 \right]$. Como o valor testado $p_0$ não está  contido no intervalo, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é menor do que 0,15.
+
+### Método Valor-p
+
+No caso unilateral esquerdo, o valor-p é apenas a probabilidade do da estatística de teste ser ainda mais extrema, menor, do que ela é. 
+
+$$\text{valor-p}=P(Z< |Z_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+ 
+valor.p = pnorm(estteste)
+valor.p
+```
+
+
+O valor-p encontrado foi considerado pequeno (já que é muito menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, podemos concluir que há evidências amostrais de que a proporção de carros manuais na Arábia Saudita é menor do que 0,15.

@@ -1,0 +1,346 @@
+---
+title: "Exemplo Teste t Pareado"
+author: "Gabriela, Laura e Maria Luisa"
+date: "06/11/2019"
+output: html_document
+---
+
+<div style="margin-bottom:60px;">
+</div>
+
+<div style="text-align: justify">
+Um pesquisador tem interesse em comparar dois métodos para prever a resistência ao cisalhamento entre traves planas metálicas. Os dois métodos,  Karlruhe (K) e Lehigh (L), foram aplicados a 9 traves especíﬁcas, e a resistência de cada uma foi medida, para cada um dos métodos.
+<div/>
+
+<div style="margin-bottom:20px;">
+</div>
+
+Primeiramente, vamos abrir o banco de dados e definir alguns objetos.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+require(exatas)
+attach(traves) #este comando anexa o banco, pirmitindo que suas variáveis sejam acessadas
+
+mi0 = 0       # pois queremos testar se a verdadeira média das diferenças é igual a zero
+alpha = 0.05  # nível de significância
+```
+<div style="margin-bottom:50px;">
+</div>
+
+<div style="text-align: justify">
+Quando dois tratamentos podem ser aplicados aos mesmos indivíduos ou objetos, podemos querer descobrir se há alguma diferença entre esses tratamentos, ou se um é superior ou inferior ao outro. Para isso, temos $n$ pares de observações, que são medições feitas nos indivíduos sob um tratamento (grupo $X$) ou outro (grupo $Y$). Podemos ainda querer saber se há diferença em alguma variável referente ao indivíduo, e tomar medidas em tempos diferentes e comparar para descobrir se houve mudança significativa. 
+<div/>
+
+<div style="margin-bottom:15px;">
+</div>
+
+<div style="text-align: justify">
+Nestes casos, podemos utilizar o teste t pareado para descobrir se houve alguma diferença entre as observações, realizando testes bilaterais ou unilaterais. Primeiramente, precisamos definir uma nova variável $D=X_{1}-Y_{1}, X_{2}-Y_{2},... ,X_{n}-Y_{n}$, onde $X=X_{1}, X_{2},... ,X_{n}$ é a variável aleatória das medições do grupo $X$ e $Y=Y_{1}, Y_{2},... ,Y_{n}$ é a variável aleatória das medições do grupo $Y$, ou seja, $D$ é a variável das diferenças entre as medidas de cada par da amostra.
+<div/>
+<div style="margin-bottom:15px;">
+</div>
+<div style="text-align: justify">
+A distribuição de referência para este teste é a t-Student com $n-1$ graus de liberdade, como a seguir:
+<div/>
+
+$$T = \frac{\bar{D}-\mu_{D}}{{S_{D}/\sqrt{n}}} \sim t_{(n-1)}$$
+<div style="text-align: justify">
+em que $\bar{D}$ é a média da variável aleatória $D$, $\mu_{0}$ é a média das diferenças que se deseja testar, $S_{D}$ é o desvio-padrão de $D$ e $n$ é o número de pares observados.
+<div/>
+
+<div style="text-align: justify">
+Temos que a distribuição sob $H_{0}$, ou seja, a distribuição da estatística de teste, é:
+<div/>
+
+$$T_{0} = \frac{\bar{D}-\mu_{D}}{{S_{D}/\sqrt{n}}} \sim t_{(n-1)}$$
+
+<div style="margin-bottom:15px;">
+</div>
+Portanto, a **estatística de teste** observada $t_{0}$ a ser utilizada em todos os testes será:
+
+$$t_{0} = \frac{\bar{d}-\mu_{D}}{s_{D} / \sqrt{n}}$$
+<div style="text-align: justify">
+em que $\bar{d}$ é a média observada das diferenças de cada par, $\mu_{D}$ a média das diferenças que se deseja testar (neste caso, 0) $s_{D}$ seu desvio-padrão amostral e $n$ o número de pares da amostra.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Bilateral
+<div style="text-align: justify">
+No teste bilateral de um teste t pareado, desejamos testar se há diferença entre dois métodos ou tratamentos aplicados a um mesmo objeto ou indivíduo, ou se com o passar do tempo houve diferença em alguma medição sobre um mesmo indivíduo. Para isso, testamos se a média das diferenças entre as medidas de um tratamento e outro ($\mu_{D}$) é significativamente diferente de zero.
+<div/>
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}:  \mu_{D} &= 0 \\ 
+H_{1}:  \mu_{D} &\neq 0  \\ 
+\end{cases}
+\end{aligned}
+$$
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Função `t.test`
+
+<div style="text-align: justify">
+Podemos fazer este teste bilateral usando a função `t.test`. Esta é a mesma função utilizada nos testes de comparação de duas médias, com a diferença de que devemos adicionar o argumento `paired = TRUE`.
+<div/>
+
+```{r}
+t.test(K, L, paired=TRUE, alt = "two.sided", mu = mi0, conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a média das diferenças observada.
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+Os valores críticos são encontrados para delimitar a região de rejeição (ou região crítica) da hipótese nula que está sendo testada. Assim, analisamos se a estatística de teste pertence ou não à região crítica; caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário.
+<div/>
+
+<div style="text-align: justify">
+Os valores críticos inferior e superior correspondem, respectivamente, aos quantis $\frac{\alpha}{2}$ e $1-\frac{\alpha}{2}$ da distribuição $t$ com $n-1$ graus de liberdade. Esses quantis podem ser encontrados em tabelas da distribuição t de Student, ou com a função `qt()` do R.
+<div/>
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# calculando a estatística de teste
+
+D = K-L # vetor das diferenças entre as observações de cada par
+mediaD = mean(D) # média das diferenças
+varD = var(D) # variância amostral das diferenças
+n =length(D) # número de pares da amostra
+
+estteste=(mediaD - mi0)/sqrt(varD/n)
+estteste
+```
+A estatística de teste encontrada nesse exemplo foi 6.081939.
+
+```{r}
+vc1 = qt(alpha/2,n-1)
+vc2 = qt(alpha/2,n-1,lower.tail=FALSE)
+vc1
+vc2
+```
+<div style="text-align: justify">
+Neste caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que -2.306004 (`vc1`) ou maior que 2.306004 (`vc2`). Como a estatística de teste vale 6.081939, rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, não há evidência amostral de que a média das diferenças entre os pares seja igual há zero, portanto há diferença significativa entre os dois métodos testados.
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+Podemos usar o intervalo de confiança da média das diferenças para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $\mu_{D}$ contém o 0. Se o intervalo não contém o 0, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+
+$$IC_{\mu_{D}}{100(1 − \alpha)\%} = \left[ \bar{D} - t_{\frac{\alpha}{2};(n-1)}\sqrt{\frac{s_{D}}{n}} ; \bar{D} + t_{\frac{\alpha}{2};(n-1)}\sqrt{\frac{s_{D}}{n}} \right]$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+IC = c(mediaD - qt(alpha/2,n-1,lower.tail = F)*sqrt(varD/n), mediaD + qt(alpha/2,n-1,lower.tail = F)*sqrt(varD/n))
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "two.sided", mu = mi0, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para a média das diferenças é $IC_{\mu_{D}}{95\%} = \left[ 0.1700423 ; 0.3777355 \right]$. Como o 0 não está contido no intervalo, podemos concluir, ao nível de 95% de confiança, que a média das diferenças entre os pares é diferente de zero, ou seja, há evidência de diferença entre os dois métodos.
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira. Para a distribuição t, no caso bilateral ele é calculado como sendo 2 vezes a probabilidade da variável aleatória $T_{0}\sim t_{(n-1)}$ ser maior que o módulo do valor da estatística de teste calculada. Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+
+$$\text{valor-p}= 2\cdot P(T_{0} > |t_{0}|)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p = 2*pt(q=6.081939, df=n-1, lower.tail=FALSE)
+valor.p
+```
+
+Utilizando a função `t.test()`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "two.sided", mu = mi0, conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.0002952955 encontrado foi considerado pequeno (já que é menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, não há evidência amostral de que a média das diferenças entre os pares seja igual a zero, portanto há diferença significativa entre os dois métodos testados.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Direito
+Testa se a média das diferenças entre as medidas de um tratamento e outro ($\mu_{D}$) é significativamente maior que zero.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}:  \mu_{D} &= 0 \\ 
+H_{1}:  \mu_{D} &> 0 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:35px;">
+</div>
+
+### Função `t.test`
+Para o caso unilateral direito, continuaremos usando a função `t.test` com o argumento `paired = TRUE`, mas desta vez com `alt="greater"`, para que o teste seja unilateral direito. 
+```{r}
+t.test(K, L, paired=TRUE, alt = "greater", mu = mi0, conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a média das diferenças.
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral direito, o valor crítico corresponde ao quantil $1-\alpha$ da distribuição $t_{(n-1)}$.
+<div/>
+```{r}
+vcd = qt(p=1-alpha,df=n-1)
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico 1.859548(`vcd`). Sendo assim, como a estatística de teste 6.081939 é maior do que esse valor crítico, rejeitamos  $H_{0}$ ao nível de 5% de significância, ou seja, não há evidência amostral de que a média das diferenças entre os pares seja menor ou igual há zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral direito é interpretado da mesma maneira que o bilateral (se não contiver o 0, rejeitamos a hipótese nula), e é calculado da seguinte maneira:
+<div/>
+$$IC_{\mu_{D}}{100(1 − \alpha)\%} = \left[ \bar{D} - t_{\alpha;(n-1)}\sqrt{\frac{s_{D}}{n}} ;\text{ } \infty \right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+IC = c(mediaD - qt(p=1-alpha,df=n-1)*sqrt(varD/n), Inf)
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "greater", mu = mi0, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu_{D}$ é $IC_{\mu_{D}}{95\%} = \left[ 0.1901476 ;\text{ } \infty \right]$. Como o 0 não está contido no intervalo, rejeitamos a hipótese nula, ou seja, não há evidência amostral de que a média das diferenças entre os pares seja menor ou igual há zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade da variável aleatória $T_{0}\sim t_{(n-1)}$ ser maior que a estatística de teste calculada.
+<div/>
+
+$$\text{valor-p}= P(T_{0} > t_{0})$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p = pt(q=estteste,df=n-1,lower.tail=FALSE)
+valor.p
+```
+Utilizando a função `t.test`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "greater", mu = mi0, conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.0001476477 encontrado foi considerado pequeno (já que foi menor do que $\alpha$=0.05), de forma que rejeitamos  $H_{0}$ ao nível de 5% de significância, ou seja, não há evidência amostral de que a média das diferenças entre os pares seja menor ou igual há zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+
+<div style="margin-bottom:50px;">
+</div>
+
+
+## Teste Unilateral Esquerdo
+Testa se a média das diferenças entre as medidas de um tratamento e outro ($\mu_{D}$) é significativamente menor que zero.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}:\mu_{D} &= 0\\ 
+H_{1}: \mu_{D} &< 0 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:35px;">
+</div>
+
+### Função `t.test`
+Para o caso unilateral esquerdo, continuaremos usando a função `t.test` com o argumento `paired = TRUE`, mas desta vez com `alt="less"`, para que o teste seja unilateral esquerdo. 
+```{r}
+t.test(K, L, paired=TRUE, alt = "less", mu = mi0, conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a média das diferenças.
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral esquerdo, o valor crítico corresponde ao quantil $\alpha$ da distribuição $t_{(n-1)}$.
+<div/>
+```{r}
+vce = qt(p=alpha,df=n-1)
+vce
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral esquerdo, para concluir o teste de hipótese basta verificar se a estatística de teste é menor que o valor crítico -1.859548(`vce`) encontrado. Sendo assim, como a estatística de teste 6.081939 é maior do que esse valor crítico, não rejeitamos  $H_{0}$ ao nível de 5% de significância, ou seja, há evidência amostral de que a média das diferenças entre os pares seja maior ou igual a zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+<div/>
+
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral esquerdo é interpretado do mesmo modo que o unilateral direito, e é calculado da seguinte maneira:
+<div/>
+
+$$IC_{\mu_{D}}{100(1 − \alpha)\%} = \left[ \text{ }- \infty \text{ } ;\bar{D} + t_{\alpha;(n-1)}\sqrt{\frac{s_{D}}{n}} \right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+IC = c(-Inf,mediaD + qt(p=1-alpha,df=n-1)*sqrt(varD/n))
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "less", mu = mi0, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu_{D}$ é $IC_{\mu_{D}}{95\%} = \left[ \text{ } - \infty ; 0.3576302 \right]$. Como o 0 está contido no intervalo, não rejeitamos a hipótese nula, ou seja, há evidência amostral de que a média das diferenças entre os pares seja maior ou igual a zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade da variável aleatória $T_{0}\sim t_{(n-1)}$ ser menor que a estatística de teste calculada.
+<div/>
+$$\text{valor-p}=  P(T_{0} < t_{0})$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p = pt(q=estteste,df=n-1)
+valor.p
+```
+
+Utilizando a função `t.test`:
+```{r}
+t.test(K, L, paired=TRUE, alt = "less", mu = mi0, conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.9998524 encontrado foi considerado elevado (já que é maior do que $\alpha$=0.05), de forma que não rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidência amostral de que a média das diferenças entre os pares seja maior ou igual a zero, portanto o método Karlruhe (K) promove uma resistência significativamente maior que o método Lehigh (L).
+<div/>
+<div style="margin-bottom:50px;">
+</div>

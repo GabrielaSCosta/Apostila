@@ -1,0 +1,403 @@
+---
+title: "Teste T Comparação de duas médias de amostras com variâncias diferentes"
+output: html_document
+---
+
+<div style="margin-bottom:60px;">
+</div>
+
+<div style="text-align: justify">
+
+A concentração de arsênio em suprimentos públicos de água potável é um risco potencial de sáude.Um estudo reportou a concentração, em partes por bilhão (ppb), de arsênio em água potável para 10 comunidades metropolitanas de Fênix e 10
+comunidades rurais do Arizona.
+Desejamos determinar se há alguma diferença nas concentrações médias de arsênio entre comunidades metropolitanas de Fênix e as comunidades rurais do Arizona.
+
+<div/>
+<div style="margin-bottom:20px;">
+</div>
+Primeiramente, vamos abrir o banco de dados e definir as variáveis.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+require(exatas) #chamando o pacote para a leitura do banco 
+attach(dados) #este comando anexa o banco, permitindo que suas variáveis sejam acessadas
+
+#definindo variáveis
+amostra1=metrop
+amostra2=rural
+med1=mean(amostra1)   #média amostral grupo 1
+med2=mean(amostra2)   #média amostral grupo 2
+var1= var(amostra1)   #variância amostral grupo 1
+var2= var(amostra2)   #variância amostral grupo 2
+n1 = length(amostra1) #tamanho amostral do grupo 1
+n2 = length(amostra2)  #tamanho amostral do grupo 2
+alpha=0.05    #nível de significância
+Delta0 = 0   # valor que estamos testando para a diferença entre a média da amostra 1 e da amostra 2
+```
+
+Para solucionar o problema, teremos que utilizar o teste-t para comparação de duas médias.Porém esse tipo de teste é divido entre dois casos, um em que as variâncias das duas amostras podem ser consideradas iguais e o outro em que as variâncias são diferentes.
+
+Sendo assim, antes de inciar esse teste, temos que utilizar o teste de comparação de duas variâncias para verificarmos em qual dos dois casos o problema se encaixa.Se você possui alguma dúvida nesse teste, consulte o material de exemplo referente a ele.
+
+```{r}
+var.test(amostra1,amostra2,data=dados)
+```
+
+Considerando a hipótese nula de igualdade entre as variâncias, ao nível de significância de 5% rejeitamos a hipótese nula, pois o valor-p 0.04936 é menor que o alpha=0.05.Ou seja, há evidência amostral de que as variâncias das duas amostras são diferentes.
+
+A partir deste resultado, concluimos que para resolver o problema apresentado teremos que usar o teste-T de comparação de duas médias para variâncias diferentes.
+
+<div style="margin-bottom:50px;">
+</div>
+
+<div style="text-align: justify">
+
+A distribuição de referência para esse teste é "aproximadamente" a t-Student com v graus de liberdade, como a seguir:
+
+$$T=\frac{\bar{D}-\triangle}{\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}} \sim t_{(v)}$$ 
+
+em que
+<div/>
+$$v=\frac{\left(\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}\right)^2}{\frac{(S_1^2/n_1)^2}{n_1-1}+\frac{(S_2^2/n_2)^2}{n_2-1}}$$
+
+Temos a distribuição sob *H0*, ou seja, a distribuição da estatística de teste é:
+
+$$T_0=\frac{\bar{D}-\triangle}{\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}} \sim t_{(v)}$$ 
+
+Portanto a *estatística de teste* observada $t_0$ a ser utilizada em todos os testes será:
+
+$$t_0=\frac{\bar{d}-\triangle}{\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}}\sim t_{(v)}$$
+
+
+
+## Teste Bilateral
+Testa a diferença entre média populacional $\mu_{1}$ da amostra 1 e a média populacional $\mu_{2}$ da amotra 2.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}&= \mu_{2} \\ 
+H_{A}: \mu_{1}&\neq \mu_{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}-\mu_{2}&=0  \\ 
+H_{A}: \mu_{1}-\mu_{2}&\neq 0 \\ 
+\end{cases}
+\end{aligned}
+$$
+
+<div style="margin-bottom:30px;">
+</div>
+### Função `t.test`
+Podemos fazer este teste bilateral usando a função `t.test`.
+```{r}
+t.test(amostra1, amostra2, alternative = "two.sided", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e as médias de cada uma das amostras.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+Os valores críticos são calculados para delimitar a região de rejeição da hipótese nula que está sendo testada.Nesse tipo de teste podemos calcular os valores críticos de duas maneiras, de forma que a análise pode ser de acordo com a estatística de teste ou com o valor da diferença da média $\triangle$ que está sendo testado.
+
+No primeiro caso analisamos se a estatística de teste pertence ou não a região crítica, caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário. 
+
+
+Nesse caso os valores críticos são encontrados com $t_{(v);1- \frac{\alpha}{2}}$ para o valor crítico inferior e $t_{(v);\frac{\alpha}{2}}$ para o superior.
+<div/>
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#calculando estatística de teste
+estteste=(med1-med2 - Delta0)/sqrt((var1/n1 + var2/n2))
+estteste
+```
+A estatística de teste encontrada nesse exemplo foi -2.76694.
+
+```{r}
+#calculando o grau de liberdade
+v=( (var1/n1 + var2/n2)^2 )/( ((var1/n1)^2)/(n1-1) + ((var2/n2)^2)/(n2-1)  )  
+
+# calculando os valores críticos:
+vc1 = qt(alpha/2,df=v,lower.tail=TRUE)
+vc2 = qt(alpha/2,df=v,lower.tail=FALSE)
+vc1
+vc2
+
+```
+<div style="text-align: justify">
+Neste caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que *-2.157118*(vc1) ou maior que *2.157118*(vc2). Como a estatística de teste vale *-2.76694*, *rejeitamos* a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que há alguma diferença nas concentrações médias de arsênio entre comunidades metropolitanas de Fênix e as comunidades rurais do Arizona.
+
+Quando utilizamos a diferença da média $\triangle$ na análise dos valores críticos verificamos se seu valor pertence ou não a região de rejeição, caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário. 
+
+Para calcular os valores críticos devemos considerar as fórmulas $\triangle - t_{\alpha;(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}$ para o valor crítico inferior e $\triangle + t_{\alpha;(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}$ para o valor crítico superior.
+
+<div/>
+
+```{r}
+vc1 = Delta0 - qt(alpha/2,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+vc1
+vc2 = Delta0 + qt(alpha/2,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+vc2
+```
+
+Neste caso, devemos rejeitar a hipótese nula se a diferença da média $\triangle$  for menor que *-11.69407*(vc1) ou maior que *11.69407*(vc2). Como a diferença entre as médias amostrais vale *-15*, *rejeitamos* a hipótese nula ao nível de significância de 5%, ou seja,há evidências amostrais de que há alguma diferença nas concentrações médias de arsênio entre comunidades metropolitanas de Fênix e as comunidades rurais do Arizona.
+
+Nos seguintes tópicos usaremos apenas a primeira abordagem dos valores críticos para concluir a hipótese.
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+Podemos usar o intervalo de confiança da diferença entre as médias para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $\mu_1-\mu_2$ contém o *0*(valor que está sendo testado para a diferença entre as médias). Se o intervalo não contém o *0*, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+
+$$IC_{\mu_1-\mu_2}{100(1 − \alpha)\%} = \left[ (\bar{X_1}-\bar{X_2})-t_{\frac{\alpha}{2};(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}; (\bar{X_1}-\bar{X_2})+t_{\frac{\alpha}{2};(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}} \right]$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+li = med1-med2 - qt(alpha/2,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+ls = med1-med2 + qt(alpha/2,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+IC = c(li, ls)
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(amostra1,amostra2, alternative = "two.sided", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu_1-\mu_2$ é $IC_{\mu_{1}-\mu_{2}}{(95\%)} =\left[-26.694067 \text{ }; \text{ }-3.305933 \right]$. Como o valor 0  não está contido no intervalo rejeitamos a hipótese nula, ou seja, há evidências amostrais de que existe diferença nas concentrações médias de arsênio entre comunidades metropolitanas de Fênix e as comunidades rurais do Arizona.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira.No caso bilateral, ele é calculado como sendo 2 vezes a probabilidade do quantil $t_{(v)}$ ser maior que o valor da estatística de teste $T^{'}$ calculada. Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+<div/>
+
+$$\text{valor-p}= 2\cdot P(T_0 >|t_0| )$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p=2*pt(abs(estteste), df=v, lower.tail=FALSE)
+valor.p
+```
+
+Utilizando a função `t.test`:
+```{r}
+t.test(amostra1,amostra2, alternative = "two.sided", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de *0.01582728* encontrado foi considerado *pequeno* (já que é *menor* do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que existe diferença nas concentrações médias de arsênio entre comunidades metropolitanas de Fênix e as comunidades rurais do Arizona.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Direito
+Testa se a média populacional $\mu_{1}$ da amostra 1 é maior que a média populacional $\mu_{2}$ da amotra 2.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}&= \mu_{2} \\ 
+H_{A}: \mu_{1}&> \mu_{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}-\mu_{2}&=0  \\ 
+H_{A}: \mu_{1}-\mu_{2}&> 0 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+
+### Função `t.test`
+Podemos fazer este teste unilateral direito usando a função `t.test` do R:
+```{r}
+t.test(amostra1, amostra2, alternative = "greater", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e as médias de cada uma das amostras.
+</div>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral direito, o valor crítico é encontrado com $t_{(v);\alpha}$
+<div/>
+```{r}
+vcd = qt(alpha,df=v,lower.tail=FALSE)
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico *1.768928*(`vcd`). Sendo assim, como a estatística de teste *-2.7669* é *menor* do que esse valor crítico, *não rejeitamos*  $H_{0}$ ao nível de 5% de significância, ou seja, não há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é maior do que a concentração média nas comunidades rurais do Arizona.
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral direito é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{\mu_{1}-\mu_{2}}{100(1 − \alpha)\%} = \left[ (\bar{X_1}-\bar{X_2})-t_{\frac{\alpha}{2};(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}};\text{ } \infty \right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+li = med1-med2 - qt(alpha,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+IC = c(li, Inf)
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(amostra1, amostra2, alternative = "greater", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu_1-\mu_2$ é $IC_{\mu_1-\mu_2}{100(1 − \alpha)\%} = \left[ -24.58963;\text{ } \infty \right]$.Como o valor 0 está contido no intervalo, não rejeitamos a hipótese nula, ou seja, não há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é maior do que a concentração média nas comunidades rurais do Arizona.
+
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $t_{(v)}$ ser maior que a estatística de teste calculada.
+<div/>
+
+$$\text{valor-p}=  P(T_0> t_0)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p=pt(estteste, df=v, lower.tail=FALSE)
+valor.p
+```
+Utilizando a função `t.test`:
+```{r}
+t.test(amostra1, amostra2, alternative = "greater", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de *0.9920864* encontrado foi considerado elevado (já que foi maior do que $\alpha$=0.05), de forma que não rejeitamos $H_{0}$ ao nível 5% de significância. Ou seja, não há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é maior do que a concentração média nas comunidades rurais do Arizona.
+
+<div style="margin-bottom:50px;">
+</div>
+
+
+## Teste Unilateral Esquerdo
+Testa se a média populacional $\mu_{1}$ da amostra 1 é menor que a média populacional $\mu_{2}$ da amotra 2.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}&= \mu_{2} \\ 
+H_{A}: \mu_{1}&< \mu_{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \mu_{1}-\mu_{2}&=0  \\ 
+H_{A}: \mu_{1}-\mu_{2}&< 0 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+
+### Função `t.test`
+Podemos fazer este teste unilateral esquerdo usando a função `t.test` do R:
+```{r}
+t.test(amostra1, amostra2, alternative = "less", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **t**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e as médias de cada uma das amostras.
+</div>
+
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral esquerdo, o valor crítico é encontrado com $t_{(v);1-\alpha}$.
+<div/>
+```{r}
+vc2 =qt(alpha,df=v,lower.tail=TRUE)
+vc2
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral esquerdo, para concluir o teste de hipótese basta verificar se a estatística de teste é menor que o valor crítico *-1.768928*(`vcd`). Sendo assim, como a estatística de teste *-2.7669* é *menor* do que esse valor crítico, *rejeitamos*  $H_{0}$ ao nível de 5% de significância, ou seja, há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é menor do que a concentração média nas comunidades rurais do Arizona.
+<div/>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral esquerdo é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+$$IC_{\mu_{1}-\mu_{2}}{100(1 − \alpha)\%} = \left[\text{ } -\infty ;(\bar{X_1}-\bar{X_2})+t_{\frac{\alpha}{2};(v)} \cdot \sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}} \right]$$
+<div/>
+
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+ls = med1-med2 + qt(alpha,df=v,lower.tail=FALSE)*sqrt((var1/n1 + var2/n2))
+IC = c(-Inf, ls)
+IC
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(amostra1, amostra2, alternative = "less", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para $\mu_1-\mu_2$ é $IC_{\mu_1-\mu_2}{100(1 − \alpha)\%} = \left[\text{ } -\infty; -5.41037\right]$.Como o valor 0 não está contido no intervalo,rejeitamos a hipótese nula, ou seja,há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é menor do que a concentração média nas comunidades rurais do Arizona.
+
+<div/>
+<div style="margin-bottom:30px;">
+</div>
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $t_{(v)}$ ser menor que a estatística de teste calculada.
+<div/>
+$$\text{valor-p}=  P(T_0 < t_0)$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+valor.p=pt(abs(estteste), df=v, lower.tail=FALSE)
+valor.p
+```
+Utilizando a função `t.test`:
+```{r}
+t.test(amostra1, amostra2, alternative = "less", 
+       mu = 0, paired = FALSE, var.equal = FALSE, 
+       conf.level = 1-alpha)$p.value
+```
+<div style="text-align: justify">
+O valor-p de *0.007913642* encontrado foi considerado pequeno (já que é menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância. Ou seja, há evidências amostrais de que a concentração média de arsênio nas comunidades metropolitanas de Fênix é menor do que a concentração média nas comunidades rurais do Arizona..
+<div/>
+<div style="margin-bottom:50px;">
+</div>

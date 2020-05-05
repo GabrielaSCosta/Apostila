@@ -1,0 +1,300 @@
+---
+title: "Exemplo Teste de Hipóteses para uma Média com Variância Desconhecida (teste t-student)"
+author: "Gabriela, Laura e Maria Luisa"
+output: html_document
+---
+<div style="margin-bottom:60px;">
+</div>
+
+<div style="text-align: justify">
+Um banco de dados sobre a análise de vinhos com 1599 observações apresenta a variável pH da amostra. Deseja-se investigar, a um nível de 5% de significância, se o pH médio é diferente, maior ou menor que 3.2. Para isso, serão realizados testes de hipóteses bilateral, unilateral direito e unilateral esquerdo, respectivamente.
+
+Como a variância populacional destas amostras é desconhecida, a estatística de teste tem distribuição t-Student com n−1 graus de liberdade.
+
+$$ T = \frac{\bar{X}-\mu}{\sqrt{S^2/n}} \sim t_{(n-1)$$
+Nessa distribuição, temos que $\bar{X}$ é a média da variável aleatória, $\mu$ é a média populacional,  $S$ é o desvio padrão da amostra e $n$ é o tamanho amostral.
+
+Quando desejamos fazer um teste de hipóteses sob a hipótese nula, ou seja, $H_{0}$, a distribuição da estatística de teste é dada por:
+
+$$T_{0} = \frac{\bar{X}-\mu_{0}}{\sqrt{S^2/n}} \sim t_{(n-1)}$$
+Portanto, a estatística de teste observada $t_{0}$ a ser aplicada em todos os testes (bilateral, unilateral à esquerda e unilateral à direita) será: 
+$$t_{0} = \frac{\bar{x}-\mu_{0}}{\sqrt{s^2/n}} \sim t_{(n-1)}$$
+Na qual $\bar{x}$ é a média da variável aleatória, $\mu_{0}$  é a média a ser testada,  $s$ é o desvio padrão amostral e $n$ é o tamanho amostral.
+
+<div/>
+
+Primeiramente, vamos abrir o banco de dados e definir as variáveis.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+require(exatas) #chamando o pacote para a leitura do banco 
+attach(vinho) #este comando anexa o banco, pirmitindo que suas variáveis sejam acessadas
+
+#definindo variáveis
+mi0=3.2        #média que se pretente testar
+media=mean(pH) #média amostral
+v= var(pH)     #variância amostral
+n = length(pH) #tamanho da amostra
+alpha=0.05     #nível de significância
+```
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Bilateral
+Testa a diferença entre a média verdadeira $\mu$ e determinada média ($\mu_{0}$), tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: \mu &= \mu_{0} \\ 
+H_{A}: \mu &\neq \mu_{0} \\ 
+\\
+H_{0}: \mu &= 3,2 \\ 
+H_{A}: \mu &\neq 3,2
+\end{aligned}
+$$
+
+<div style="margin-bottom:30px;">
+</div>
+### Função `t.test`
+Podemos fazer esse teste bilateral usando a função `t.test` ,já que o desvio padrão populacional é desconhecido. 
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+t.test(pH, alt = "two.sided", mu = mi0, conf.level = 1-alpha)
+
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística t, o valor-p, a hipótese alternativa, o intervalo de confiança ao nível (1−α)100% e a média da amostra.
+
+<div/>
+
+<div style="margin-bottom:30px;">
+</div>
+
+
+### Método Valor Crítico
+<div style="text-align: justify">
+Os valores críticos são calculados para delimitar a região de rejeição da hipótese nula que está sendo testada. Assim, analisamos se a estatística de teste pertence ou não a região crítica; caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário. 
+
+Já os valores críticos são encontrados com $\mu_{0} - t_{\frac{\alpha}{2};(n-1)}\cdot \sqrt{\frac{s^2}{n}}$ para o valor crítico inferior e $\mu_{0} + t_{\frac{\alpha}{2};(n-1)}\cdot \sqrt{\frac{s^2}{n}}$ para o superior.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#calculando estatística de teste:
+estteste = (media-mi0)/sqrt(v/n)
+estteste
+```
+A estatística de teste do exemplo vale 28.78.
+
+```{r}
+#encontrando os valores críticos
+vc1= qt(alpha/2,df=n-1) 
+vc2= qt(1-alpha/2,df=n-1)
+vc1
+vc2
+```
+<div style="text-align: justify">
+Nesse caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que -1.96145(vc1) ou maior que 1.96145(vc2). 
+Como a estatística de teste vale 28,77933 (que é maior do que 1.96145), rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que a média do pH dos vinhos é diferente de 3,2.
+<div/>
+
+
+### Método Intervalo de Confiança
+<div style="text-align: justify">
+Podemos usar o intervalo de confiança da média para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $\mu$ contém o valor que está sendo testado $\mu_{0}$. Se o intervalo não contém a média, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+$$IC_{\mu}{100(1 − \alpha)\%} = \left[\bar{x}+ t_{\frac{\alpha}{2};n-1} \cdot \sqrt{ \frac{s^2}{n}} \text{ }  ;\text{ } \bar{x}+ t_{\frac{\alpha}{2};n-1} \cdot \sqrt{ \frac{s^2}{n}}\right]$$
+
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+conf = 1-alpha
+probs = c(((1-conf)/2),(1-(1-conf)/2))
+IC <- media + qt(probs, df = n - 1) * sqrt(v/n)
+IC
+```
+
+Construindo uma função para calcular o intervalo:
+```{r echo=TRUE}
+IC.T <- function(x, conf) {
+  n <- length(x)
+  media <- mean(x)
+  variancia <- var(x)
+  quantis <- qt(c((1 - conf)/2, 1 - (1 - conf)/2), df = n - 1)
+  ic <- media + quantis * sqrt(variancia/n)
+  return(ic)
+}
+IC.T(pH,conf=1-alpha)
+```
+
+Usando a função `t.test`:
+```{r}
+t.test(pH, alt = "two.sided", mu = mi0, conf.level = 1-alpha)$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para a média do valor do pH é $IC_{\mu}(95\%)=\left[3.303540 \text{ }; \text{ }3.318686  \right]$. Como a estatística de teste $\mu_{0}$=3,2 não está contida no intervalo, rejeitamos a hipótese nula, ou seja, há evidências amostrais de que a verdadeira média do pH dos vinhos é diferente de 3,2.
+<div/>
+### Método valor-p
+<div style="text-align: justify">
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira. No caso bilateral, ele é calculado como sendo 2 vezes a probabilidade do quantil $t_{(n-1)}$ ser maior que a estatística de teste calculada. Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+<div/>
+$$\text{valor-p}= 2 \cdot P(T > |t_{0}|)$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(v/n)) 
+valor.p = 2*pt(q=estteste, df=n-1, lower=FALSE)
+valor.p
+```
+
+Utilizando a função `t.test`
+```{r}
+t.test(pH, alt = "two.sided", mu = mi0, conf.level = (1-alpha))$p.value
+```
+<div style="text-align: justify">
+O valor-p encontrado foi considerado pequeno (menor do que $\alpha$=0.05), de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que a verdadeira média do pH dos vinhos é diferente de 3,2.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Direito
+Testa se a média verdadeira $\mu$ é maior que determinada média ($\mu_{0}$), tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: \mu &= \mu_{0} \\ 
+H_{A}: \mu &> \mu_{0} \\
+\\
+H_{0}: \mu &= 3,2 \\ 
+H_{A}: \mu &> 3,2
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral direito é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{{\mu}}{100(1 − \alpha)\%} = \left[  \bar{x} + t_{\alpha;(n-1)}\cdot \sqrt{\frac{s^2}{n}}; \text{ } \infty \right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+#calcular o IC
+conf = 1-alpha
+IC <- media + qt(alpha,  df = n - 1)*sqrt(v/n)
+IC
+```
+
+### Função `t.test`
+Podemos fazer este teste unilateral esquerdo usando a função `t.test` do R:
+```{r}
+t.test(pH, alt = "greater", mu = mi0, conf.level = 1-alpha)$conf.int
+
+```
+Temos que o intervalo de confiança para a média do valor do pH é $IC_{\mu}(95\%)=\left[3.304759 \text{ }; \text{ } \infty   \right]$. Como a estatística de teste $\mu_{0}$=3,2 não está contida no intervalo, rejeitamos a hipótese nula, ou seja, há evidências amostrais de que a verdadeira média do pH dos vinhos é maior do que 3,2.
+<div style="text-align: justify">
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral direito, o valor crítico é encontrado com $t_{\alpha;(n-1)}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vcd= qt(alpha,df=n-1) 
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior do que o valor crítico -1.645808 (`vcd`). Sendo assim, como a estatística de teste 28,77933 é maior que -1.645808 , devemos rejeitar $H_{0}$ ao nível de 5% de significância, ou seja, há evidências amostrais de que a média do pH dos vinhos é maior que 3,2.
+<div/>
+
+### Método do Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $t_{(n-1)}$ ser maior que a estatística de teste calculada.
+<div/>
+
+$$\text{valor-p}= P(T < t_{0})$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(v/n))  
+valor.p = pt(q=estteste, df=n-1, lower=FALSE)
+valor.p
+```
+Utilizando a função `t.test`:
+```{r}
+t.test(pH, alt = "greater", mu = mi0, conf.level = (1-alpha))$p.value
+```
+<div style="text-align: justify">
+O valor-p de 2.119823e-147 encontrado foi considerado pequeno, pois é menor que 0.05, de forma que rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que a média do pH dos vinhos é maior que 3,2.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Esquerdo
+Testa se a média verdadeira $\mu$ é menor que determinada média ($\mu_{0}$), tida como verdadeira sob $H_{0}$.
+$$
+\begin{aligned}
+H_{0}: \mu &= \mu_{0} \\ 
+H_{A}: \mu &< \mu_{0} \\
+\\
+H_{0}: \mu &= 3,2 \\ 
+H_{A}: \mu &< 3,2
+\end{aligned}
+$$
+<div style="margin-bottom:50px;">
+</div>
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral esquerdo é calculado da seguinte maneira:
+<div/>
+$$IC_{\mu}{100(1 − \alpha)\%} = \left[ - {\infty};\bar{x} + t_{1 -\alpha; (n-1)}\cdot \sqrt{\frac{s^2}{n}}\right]$$
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+#calcular o IC
+conf = 1-alpha
+IC <- media + qt(1-alpha,  df = n - 1)*sqrt(v/n)
+IC
+```
+
+### Função `t.test`
+Podemos fazer este teste unilateral esquerdo usando a função `t.test` do R:
+```{r}
+t.test(pH, alt = "less", mu = mi0, conf.level = 1-alpha)$conf.int
+
+```
+Temos que o intervalo de confiança para a média do valor do pH é $IC_{\mu}(95\%)=\left[- \text{ } \infty; 3.317467  \right]$. Como a estatística de teste $\mu_{0}$=3,2 está contida no intervalo, não rejeitamos a hipótese nula, ou seja, há evidências amostrais de que a verdadeira média do pH dos vinhos é maior do que 3,2.
+
+
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral esquerdo, o valor crítico é encontrado com $\mu_{0} - t_{\alpha;(n-1)}\cdot \sqrt{\frac{s^2}{n}}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vce= mi0 - qt(1-alpha,df=n-1) * sqrt(v/n)
+vce
+```
+<div style="text-align: justify">
+No teste unilateral esquerdo,  vamos rejeitar $H_{0}$ caso a estatística de teste $\mu_{0}$ seja menor do que o valor crítico 3,193646. Sendo assim, nesse caso, como $\mu_{0}$ =3,2, não rejeitamos a hipótese nula ao nível de 5% de significância, ou seja, não há evidências amostrais de que a média do pH é menor que 3,2.
+<div/>
+### Método do Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $t_(n-1)$ ser menor que a estatística de teste calculada.
+<div/>
+$$\text{valor-p}= P(T < t_{0})$$
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = (media - mi0) / (sqrt(v/n))  
+valor.p = pt(q=estteste, df=n-1, lower=T)
+valor.p
+```
+Utilizando a função `t.test`
+```{r}
+t.test(pH, alt = "less", mu = mi0, conf.level = (1-alpha))$p.value
+```
+<div style="text-align: justify">
+O valor-p igual a 1 é superior a 0.05.Dessa forma, não rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que a média do pH é maior do que 3,2.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>

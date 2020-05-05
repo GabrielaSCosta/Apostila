@@ -1,0 +1,390 @@
+---
+title: "Exemplo Comparação de Variâncias"
+author: "Gabriela, Laura e Maria"
+date: "16/10/2019"
+output: html_document
+---
+<div style="margin-bottom:60px;">
+</div>
+
+<div style="text-align: justify">
+Dois catalisadores estão sendo analisados para determinar como eles afetam o rendimento médio de um processo químico. Deseja-se investigar, a um nível de 5% de significância, se a variância do tendimento dos dois catalisadores é igual. Para isso, será realizado um teste para a variância.
+<div/>
+<div style="margin-bottom:20px;">
+</div>
+Primeiramente, vamos abrir o banco de dados e definir as variáveis.
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=FALSE}
+require(exatas)
+attach(catalisadores) #este comando anexa o banco, pirmitindo que suas variáveis sejam acessadas
+
+#definindo variáveis
+amostra1=C1
+amostra2=C2
+var1= var(amostra1)   #variância amostral grupo 1
+var2= var(amostra2)   #variância amostral grupo 2
+gl1 = length(amostra1)-1  #graus de liberdade do grupo 1
+gl2 = length(amostra2)-1  #graus de liberdade do grupo 2
+alpha=0.05    #nível de significância
+```
+<div style="margin-bottom:50px;">
+</div>
+
+<div style="margin-bottom:15px;">
+</div>
+<div style="text-align: justify">
+No teste para a comparação de duas variâncias, consideramos duas amostras independentes de tamanhos $n_{1}$ e $n_{2}$. Para realizar essa comparação, calculamos se a razão entre as variâncias amostrais é estatisticamente diferente, superior ou inferior a 1 (se essa razão for igual a 1, temos que as variâncias são estatisticamente iguais). 
+<div/>
+
+<div style="text-align: justify">
+Seja $U\sim\chi^{2}_{m}$ uma variável aleatória qui-quadrado com graus de liberdade $m$ e $V\sim\chi^{2}_n$ uma variável aleatória qui-quadrado com graus de liberdade $n$. A variável aleatória $F=\frac{U/m}{V/n}$ segue uma distribuição $F$ com graus de liberdade $m$ e $n$ que são chamados, respectivamente, de graus de liberdade do numerador e do denominador. Como a variância amostral de uma amostra de tamanho $n$ segue uma qui-quadrado dividida pelos seus $n-1$ graus de liberdade, a variável correspondente à razão entre as variâncias seguirá uma distribuição qui-quadrado.
+<div/>
+
+<div style="text-align: justify">
+Assim, na distribuição $F$ que usaremos neste teste para comparação de variâncias, os graus de liberdade serão $n_{1}-1$ e $n_{2}-1$, como a seguir:
+<div/>
+
+$$F = \frac{S_{1}^{2}}{S_{2}^{2}} \sim F_{n_{1}-1 ; n_{2}-1}$$
+
+<div style="text-align: justify">
+em que $S_{1}^{2}$ é a variável aleatória média amostral do grupo 1 e $S_{2}^{2}$ é a variável aleatória média amostral do grupo 2.
+<div/>
+
+<div style="text-align: justify">
+Temos que a distribuição sob $H_{0}$, ou seja, a distribuição da estatística de teste, é:
+<div/>
+
+$$F_{0} = \frac{S_{1}^{2}}{S_{2}^{2}} \sim F_{n_{1}-1 ; n_{2}-1}$$
+
+<div style="margin-bottom:15px;">
+</div>
+Portanto, a **estatística de teste** observada $f_{0}$ a ser utilizada em todos os testes será:
+$$f_{0} = \frac{s_{1}^{2}}{s_{2}^{2}}$$
+
+<div style="text-align: justify">
+em que $s_{1}^{2}$ é a média amostral calculada com os dados do grupo 1 e $s_{2}^{2}$ é a média amostral calculada com os dados do grupo 2.
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Bilateral
+Testamos a diferença entre a variância populacional $\sigma_{1}^{2}$ da amostra 1 e a variância populacional $\sigma_{2}^{2}$ da amostra 2 a partir da comparação das variâncias amostrais de ambos grupos.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \sigma_{1}^{2} &= \sigma_{2}^{2} \\ 
+H_{A}: \sigma_{1}^{2} &\neq \sigma_{2}^{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &= 1 \\ 
+H_{A}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &\neq 1 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:35px;">
+</div>
+### Função `var.test`
+Podemos fazer este teste bilateral usando a função `var.test`.
+```{r}
+var.test(amostra1, amostra2, data = dados)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **F**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a razão das variâncias amostrais.
+<div/>
+<div style="margin-bottom:35px;">
+</div>
+### Método do Valor Crítico
+<div style="text-align: justify">
+Os valores críticos são calculados para delimitar a região de rejeição da hipótese nula que está sendo testada. Assim, analisamos se a estatística de teste pertence ou não a região crítica; caso a resposta seja afirmativa, rejeitamos $H_{0}$ ao nível $\alpha$ de significância, e não rejeitamos caso contrário. 
+<div/>
+
+<div style="text-align: justify">
+Os valores críticos inferior e superior correspondem, respectivamente, aos quantis $\alpha$ e $1-\alpha$ da distribuição $F$ com $n_{1}-1$ graus de liberdade no numerador e $n_{2}-1$ no demoninador. Devida ao grande número de combinações de graus de liberdade e quantis possíveis, esses valores são tabelados para os quantis mais frequentemente utilizados. No entanto, com o R podemos encontrar os quantis de qualquer combinação de graus de liberdade e quantil que se deseje, com a função `qf()`.
+<div/>
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#calculando estatística de teste:
+estteste = var1/var2
+estteste
+```
+A estatística de teste encontrada nesse exemplo foi 0.6390651.
+```{r}
+vc1 = qf(alpha, gl1,gl2)
+vc2 = qf(1-alpha, gl1,gl2)
+vc1
+vc2
+```
+<div style="text-align: justify">
+Neste caso, devemos rejeitar a hipótese nula se a estatística de teste for menor que 0.2640582(vc1) ou maior que 3.787044(vc2). Como a estatística de teste vale 0.6390651, não rejeitamos a hipótese nula ao nível de significância de 5%, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais.
+
+<div/>
+<div style="margin-bottom:35px;">
+</div>
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+Podemos usar o intervalo de confiança da razão das variâncias para fazer um teste de hipóteses, basta observar se o intervalo de $100(1-\alpha)\%$ de confiança para $\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}$ contém o 1. Se o intervalo não contém o 1, rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância, caso contrário, não  rejeitamos a hipótese nula ao nível de $\alpha\%$ de significância.
+<div/>
+
+
+$$IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{100(1 − \alpha)\%} = \left[ \frac{1}{F_{{n_{2}-1 , n_{1}-1};\left(\frac{\alpha}{2}\right)}}\cdot\frac{s_{1}^{2}}{s_{2}^{2}} \text{ };\text{ } F_{{n_{1}-1 , n_{2}-1};\left( \frac{\alpha}{2}\right)}\cdot\frac{s_{1}^{2}}{s_{2}^{2}} \right]$$
+<div style="text-align: justify">
+Como as tabelas da distribuição F nos informam apenas a área acima da do quantil, para encontramos o quantil cuja área abaixo vale $\frac{\alpha}{2}$ devemos transformar a variável. Tal transformação consiste em inverter os graus de liberdade da distribuição e depois inverter o valor do quantil encontrado para esta distribuição com os graus invertidos. Assim, a área abaixo do quantil $F_{n_{1}-1,n_{2}-1;\left(1-\frac{\alpha}{2}\right)}$ é a mesma que a acima do quantil $\frac{1}{F_{{n_{2}-1 , n_{1}-1};\left(\frac{\alpha}{2}\right)}}$. Se estivermos utilizando o R, no entanto, o quantil da área abaixo pode ser encontrado com a função `qf()`.
+<div/>
+Ao final deste exemplo, é apresentada a explicação teórica para a inversão dos graus de liberdade da $F$ e do quantil.
+
+Fazendo as contas passo a passo, utilizando o R como uma calculadora:
+```{r echo=TRUE}
+IC <- c(qf(alpha/2,gl1,gl2,lower.tail=TRUE)* var1/var2 , qf((alpha/2),gl1,gl2,lower.tail=F)* var1/var2)
+# ou podemos calcular como na fórmula
+#IC <- c(1/qf((alpha/2),gl2,gl1,lower.tail=F) * var1/var2, qf((alpha/2),gl1,gl2,lower.tail=F)* var1/var2)
+IC
+```
+
+Usando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="two.sided")$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para as variâncias da produção de bebidas nos meses de julho e agosto de 2019 é $IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{(95\%)} =\left[0.1279433 \text{ }; \text{ }3.1920724 \right]$. Como a estatística de teste $f_{0}$=0.6390651 está contida no intervalo, não rejeitamos a hipótese nula, ou seja, ao nível de significância de 5% há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+O valor-p é a probabilidade de rejeitarmos erroneamente a hipótese nula com base nos dados amostrais, ou seja, rejeitá-la dado que ela é verdadeira. Como a distribuição $F$ é assimétrica, no caso bilateral ele é calculado como sendo 2 vezes o mínimo entre a probabilidade do quantil $F_{n_{1}-1 ; n_{2}-1}$ ser maior que o valor da estatística de teste $f_{0}$ calculada e a probabilidade dele ser menor. Se o valor-p for menor ou igual ao nível de significância, rejeitamos a hipótese nula, e se for maior, não rejeitamos. 
+<div/>
+
+$$\text{valor-p}= 2 \cdot \text{min}\{ P(F > f_{0});P(F < f_{0})\}$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = var1/var2
+valor.p = 2*min(pf(q=estteste, df1=gl1, df2=gl2, lower.tail=TRUE),pf(q=estteste, df1=gl1, df2=gl2, lower.tail=FALSE))
+valor.p
+```
+Utilizando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="two.sided")$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.569131 encontrado foi considerado  elevado (já que é maior do que $\alpha$=0.05), de forma que .não rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Direito
+Testamos se a variância populacional $\sigma_{1}^{2}$ da amostra 1 é maior que a variância populacional $\sigma_{2}^{2}$ da amostra 2.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \sigma_{1}^{2} &= \sigma_{2}^{2} \\ 
+H_{A}: \sigma_{1}^{2} &> \sigma_{2}^{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &= 1 \\ 
+H_{A}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &> 1 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:35px;">
+</div>
+### Função `var.test`
+Podemos fazer este teste unilateral direito usando a função `var.test` do R:
+```{r}
+var.test(amostra1,amostra2, data = dados, alternative="greater", conf.level=1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **F**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a razão das variâncias amostrais.
+</div>
+<div style="margin-bottom:30px;">
+</div>
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral direito, o valor crítico é encontrado com $F_{(n_{1}-1 , n_{2}-1);1-\alpha}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vcd= qf(1-alpha,gl1,gl2)
+vcd
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico 3.787044 (`vcd`). Sendo assim, como a estatística de teste 0.6390651 é menor do que esse valor crítico, não rejeitamos  $H_{0}$ ao nível de 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+<div style="margin-bottom:35px;">
+</div>
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral direito é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{100(1 − \alpha)\%} = \left[ \frac{1}{F_{n_{2}-1,n_{1}-1;(\alpha)}}\cdot\frac{s_{1}^{2}}{s_{2}^{2}}\text{ };\text{ } \infty \right]$$
+Como no teste unilateral direito queremos encontrar a área abaixo do quantil $F_{n_{1}-1,n_{2}-1;(1-\alpha)}$, devemos calcular $\frac{1}{F_{n_{2}-1,n_{1}-1;(\alpha)}}$ com a tabela. Novamente, o R pode calcular este quantil inferior sem que a transformação seja necessária.
+
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+IC <- c(qf(alpha,gl1,gl2,lower.tail = TRUE) * var1/var2, Inf)
+# ou, como na fórmula
+#IC <- c(1/(qf((alpha),gl2,gl1,lower.tail = FALSE)) * var1/var2, Inf)
+IC
+```
+
+Usando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="greater")$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para as variâncias da produção de bebidas nos meses de julho e agosto de 2019 é $IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{(95\%)} =\left[0.1687504 \text{ }; \text{ }\infty  \right]$. Como a estatística de teste $f_{0}$=0.6390651 está contida no intervalo, não rejeitamos a hipótese nula, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+<div style="margin-bottom:35px;">
+</div>
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $F_{n_{1}-1,n_{2}-1}$ ser maior que a estatística de teste calculada.
+<div/>
+
+$$\text{valor-p}=  P(F > f_{0})$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = var1/var2
+valor.p = pf(q=estteste, df1=gl1, df2=gl2, lower.tail=FALSE)
+valor.p
+```
+Utilizando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="greater")$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.7154345 encontrado foi considerado elevado (já que foi maior do que $\alpha$=0.05), de forma que não rejeitamos  $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+
+<div style="margin-bottom:50px;">
+</div>
+
+## Teste Unilateral Esquerdo
+Testa se a variância populacional $\sigma_{1}^{2}$ da amostra 1 é menor que a variância populacional $\sigma_{2}^{2}$ da amostra 2.
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \sigma_{1}^{2} &= \sigma_{2}^{2} \\ 
+H_{A}: \sigma_{1}^{2} &< \sigma_{2}^{2} \\ 
+\end{cases}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\begin{cases}
+H_{0}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &= 1 \\ 
+H_{A}: \frac{\sigma_{1}^{2}}{\sigma_{2}^{2}} &< 1 \\ 
+\end{cases}
+\end{aligned}
+$$
+<div style="margin-bottom:30px;">
+</div>
+### Função `var.test`
+Podemos fazer este teste unilateral esquerdo usando a função `var.test` do R:
+```{r}
+var.test(amostra1,amostra2, data = dados, alternative="less", conf.level=1-alpha)
+```
+<div style="text-align: justify">
+Note que a saída do R nos informa a estatística **F**, os graus de liberdade da distribuição de referência, o **valor-p**, a hipótese alternativa, o **intervalo de confiança** ao nível $(1-\alpha)100\%$ e a razão das variâncias amostrais.
+</div>
+<div style="margin-bottom:30px;">
+</div>
+### Método do Valor Crítico
+<div style="text-align: justify">
+No caso unilateral esquerdo, o valor crítico é encontrado com $F_{(n_{1}-1 , n_{2}-1);\alpha}$.
+<div/>
+```{r}
+#calculando o valor crítico
+vce= qf(alpha,gl1,gl2)
+vce
+```
+<div style="text-align: justify">
+Como se trata do caso unilateral direito, para concluir o teste de hipótese basta verificar se a estatística de teste é maior que o valor crítico 0.2640582 (`vce`). Sendo assim, como a estatística de teste  0.6390651 é maior do que o valor crítico encontrado , não rejeitamos $H_{0}$ ao nível de 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+### Método do Intervalo de Confiança
+<div style="text-align: justify">
+O intervalo para o caso unilateral esquerdo é interpretado da mesma maneira que o bilateral, e é calculado da seguinte maneira:
+<div/>
+$$IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{100(1 − \alpha)\%} = \left[ 0 \text{ };\text{ } F_{n_{1}-1,n_{2}-1;(\alpha)}\cdot\frac{s_{1}^{2}}{s_{2}^{2}} \right]$$
+Neste caso, como o que desejamos é justamente a área acima, nenhuma transformação precisa ser feita, uma vez que a tabela nos fornece os quantis da cauda direita.
+
+Calculando o intervalo usando o R como uma calculadora:
+```{r echo=TRUE}
+IC <- c(0,qf(alpha,gl1,gl2,lower.tail = FALSE)* var1/var2)
+IC
+```
+
+Usando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="less")$conf.int
+```
+<div style="text-align: justify">
+Temos que o intervalo de confiança para as variâncias da produção de bebidas nos meses de julho e agosto de 2019 é $IC_{\frac{\sigma_{1}^{2}}{\sigma_{2}^{2}}}{(95\%)} =\left[0 \text{ }; \text{ }2.420168  \right]$. Como a estatística de teste $f_{0}$=0.6390651  está contida no intervalo, não rejeitamos a hipótese nula, ou seja, ao nível de 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+### Método Valor-p
+<div style="text-align: justify">
+No caso unilateral direito, o valor-p é apenas a probabilidade do quantil $F_{n_{1}-1,n_{2}-1}$ ser menor que a estatística de teste calculada.
+<div/>
+$$\text{valor-p}=  P(F < f_{0})$$
+Fazendo as contas passo a passo, utilizando o R como uma calculadora
+```{r echo=TRUE}
+estteste = var1/var2
+valor.p = pf(q=estteste, df1=gl1, df2=gl2, lower.tail=TRUE)
+valor.p
+```
+Utilizando a função `var.test`:
+```{r}
+var.test(amostra1,amostra2, data = dados, alt="less")$p.value
+```
+<div style="text-align: justify">
+O valor-p de 0.2845655 encontrado foi considerado elevado (já que é maior do que $\alpha$=0.05), de forma que não rejeitamos $H_{0}$ ao nível 5% de significância, ou seja, há evidências amostrais de que as variâncias dos tendimentos dos dois catalisadores são iguais .
+<div/>
+
+<div style="margin-bottom:35px;">
+</div>
+
+## Transformação da F
+Temos que $F_{n_{1}-1,n_{2}-1;\left(1-\frac{\alpha}{2}\right)} = \frac{1}{F_{{n_{2}-1 , n_{1}-1};\left(\frac{\alpha}{2}\right)}}$ pois:
+
+$$
+\begin{aligned}
+
+\frac{\alpha}{2} &= P\left(F_{m,n} < f_{m,n;\left( 1-\frac{\alpha}{2} \right)}\right) \\
+&= P\left(\frac{1}{F_{m,n}} > \frac{1}{f_{m,n;\left( 1-\frac{\alpha}{2} \right)}}\right) \\
+&= P\left(F_{n,m} > \frac{1}{f_{m,n;\left( 1-\frac{\alpha}{2} \right)}}\right) \\
+&= P\left(F_{n,m} > f_{n,m;\left(\frac{\alpha}{2} \right)}\right)
+
+\end{aligned}
+$$
+
+Para chegar no resultado acima, temos que $\frac{1}{F_{n_{1}-1,n_{2}-1}} = F_{n_{2}-1,n_{1}-1}$ pois a :
+
+$$
+\begin{aligned}
+
+F_{m,n} = \frac{U/m}{V/n} \space \space \space \text{logo,}\\
+\\
+\frac{1}{F_{m,n}} = \frac{1}{\frac{U/m}{V/n}} = \frac{V/n}{U/m} = F_{n,m} \\
+\\
+\text{Obs.:} \space \space \space U \sim \chi^2_{m}\space \space \space\text{e}\space \space \space V \sim \chi^2_{n}
+\end{aligned}
+$$
+<div style="margin-bottom:50px;">
+</div>

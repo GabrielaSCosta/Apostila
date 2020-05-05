@@ -52,6 +52,18 @@ by(carro$price,carro$condition, mean)
 ```
  Logo, a média de preço dos carros novos é de R\$ 98.500,00, enquanto que o dos usados é de R\$ 35.262,59.
  
+### **No R Commander**
+No R Commander há duas formas de obter a média. Na primeira, você pode ir em :
+
+    Estatísticas > Resumos > Resumos numéricos... 
+
+e escolher a variável em questão, com isso, o software te retornará uma tabela com a média na primeira posição e , em seguida, outras medidas de resumo que serão vistas posteriormente. A segunda forma é ir em :
+              
+    Estatísticas > Resumos > Tabelas de Estatísticas... 
+
+selecionar Média e a variável que será utilizada como fator, bem como a variável que você tem interesse de calcular a média. Observe que dessa forma não é possível gerar uma única média para toda a amostra, apenas médias para diferentes grupos.
+
+ 
 ### 4.2.2 Mediana 
 
 A *mediana* é uma medida de tendência central cujo objetivo é mostrar o valor da amostra que é maior ou igual a pelo menos metade dos valores observados na amostra, e ao mesmo tempo, menor ou igual a pelo menos metade dessa mesma amostra. Ela também pode ser chamada de segundo quartil ou percentil 50. No R é possível utilizar o comando median que tem como argumento apenas o banco de dados em questão, ou a função *quantile* cujos argumentos serão, o vetor com os valores da amostra e *probs* que deve ser igualado a 0.5. Veja os exemplos a seguir: Um técnico anotou o tempo em dias que determinada máquina precisou de manutenção. Os dados obtidos foram 20, 26, 26, 18 e 30 dias, ele deseja calcular a mediana dessa amostra, logo, utilizou o seguinte argumento:
@@ -69,6 +81,19 @@ amostra = c( 10, 8, 12, 14, 13, 9)
 quantile(amostra, probs = 0.5)
 ```
 Já nesse exemplo, percebe-se que a mediana é igual a 11, porque pelo menos 50% das observações são menores que 11 e pelo menos 50% das observações são maiores que 11. Perceba que 11 é a média entre 10 e 12, esse é o procedimento utilizado quando o tamanho da amostra é par.
+
+### **No R Commander**
+
+Assim, como com a média, há duas formas de obter a mediana no RCommander. Na primeira, você pode ir em :
+
+    Estatísticas > Resumos > Resumos numéricos... 
+
+e escolher a variável em questão, com isso, o software te retornará uma tabela e mediana será o sexto elemento da mesma. A segunda forma é ir em:
+
+    Estatísticas > Resumos > Tabelas de Estatísticas...
+
+escolher mediana e a variável de interesse, bem como uma variável como categoria, dessa forma não é possível gerar uma mediana geral da amostra.
+
 
 ### 4.2.3 Quartis 
 
@@ -97,6 +122,14 @@ amostra = c(13,8,10,9,14)
 quantile(amostra)
 ```
 Como a amostra tem tamanho 5, cada percentil é representado por um elemento da amostra.
+
+### **No R Commander**
+Para encontrar os valores do primeiro e terceiro quartis utilizando o RCommander você pode seguir os mesmos passos que os anteriores, isto é,
+
+    Estatísticas > Resumos > Resumos numéricos... 
+    
+e escolher a variável em questão, nesse caso, o quinto e o sétimo valores representados na tabela corresponderão ao primeiro e terceiro quartil.
+
 
 ### 4.2.4 Função Summary
 Com apenas um comando é possível obter uma tabela com algumas das principais medidas de resumo, no R base isso é possível usando o comando *summary*, que recebe como argumento apenas o banco de dados.
@@ -129,6 +162,23 @@ Enquanto a variância é igual a 15.1495 anos.
 ```
 
 Repare que esse valor é exatamente igual ao anterior.
+
+### **No R Commander**
+
+Novamente, há duas formas de obter o desvio no RCommander. 
+
+Na primeira, você pode ir em:
+
+Estatísticas > Resumos > Resumos numéricos...
+
+e escolher a variável em questão, com isso, o software te retornará uma tabela e o desvio padrão será o segunda elemento da mesma, representado por *sd*.
+
+A segunda forma é ir em:
+
+    Estatísticas > Resumos > Tabelas de Estatísticas...
+    
+escolher Desvio Padrão e a variável de interesse, bem como uma variável como categoria, dessa forma não é possível gerar uma mediana geral da amostra. Se você deseja trabalhar com a variância basta colocar os resultados ao quadrado.
+
 
 ### 4.2.6 Escore Padronizado
 
@@ -170,6 +220,15 @@ cv2
 ```
 Nesse caso, o coeﬁciente de variação foi igual a 27.18251, logo, podemos concluir que o número de maçãs por macieria varia mais que o número de bananas por bananeira.
 
+### **No R Commander**
+
+Para calcular o Coeﬁciente de Variação no RCommander é preciso dar uma passo a mais em comparação às outras medidas, depois de realizar o seguinte passo a passo: 
+
+    Estatísticas > Resumos > Resumos numéricos... 
+
+você deve clicar em Estatísticas e selecionar Coeﬁciente de variação, assim, ele aparecerá na quarta posição da tabela.
+
+
 ### 4.2.8 Coeﬁciente de Correlação de Pearson 
 
 O Coeﬁciente de *Correlação de Pearson* é utilizado quando queremos mensurar o quanto duas variáveis estão relacionadas, ou seja, se o fato de uma das variáveis aumentar faz com que a outra aumente ou diminua. Ele é representado pela letra r, em que -1 < r < 1. Quanto maior o módulo de r, maior a correlação, que pode ser negativa ou positiva. 
@@ -184,3 +243,14 @@ cor(carro$year,carro$price)
 ```
 
 Observe que o Coeﬁciente de Correlação está muito próxima de zero, logo, não há evidência de que as variáveis estudadas sejam correlacionadas.
+
+### **No R Commander**
+
+Para calcular o Coeﬁciente de Correlação de Pearson no R Commander, você deve seguir as seguintes especiﬁcações:
+
+    Estatísticas > Resumos > Matriz de Correlação
+    
+quando a janela de escolha abrir, se atente em selecionar a segunda variável com a tecla Ctrl pressionada e de escolher o tipo de correlação "Produto-momento de Pearson". 
+
+Deve reparar também que não será retornado um valor único, mas sim uma matriz de valores, nessa matriz os valores contidos na 2° e 3° célula, que devem ser o mesmo, representa o valor do coeﬁciente de correlação.
+
