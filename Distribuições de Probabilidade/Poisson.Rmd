@@ -1,0 +1,80 @@
+---
+title: "Distribuição de Probabilidades"
+author: "Gabriela, Matheus, Vitor"
+date: "06/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## 5.2 Poisson
+
+É comum encontrarmos problemas em que o número de ocorrência de determinado evento é obtido a partir da distribuição Poisson com uma taxa λ. Neste tópico apresentaremos funções bem similares às que vimos no tópico referente à distribuição binomial, são elas: ppois, dpois e qpois.
+
+A probabilidade de eventos envolvendo a distribuição de Poisson podem ser calculadas através da seguinte função de probabilidade: 
+
+$$ P(X=k) = \frac{e^{-λ}λ^k}{x!}$$
+
+### 5.2.1 Função dpois
+
+Assim como em *dbinom*, a função *dpois* nos retorna a probabilidade associada a um valor de X. A diferença entre *dbinom* e *dpois* são os parâmetros que passamos para a função, devido à característica de cada modelo. No caso da binomial, devemos informar o tamanho do experimento e a probabilidade de sucesso, na Poisson precisamos informar apenas o valor do parâmetro λ.
+
+**Exemplo**
+
+Suponha que um determinado em uma fábrica de laticínios, na etapa de embalagens podem ocorrer falhas, de acordo com uma variável aleatória X que segue uma distribuição de Poisson de parâmetro λ = 3. 
+
+Estamos interessados na probabilidade de 5 caixas de leite apresentarem alguma deformação.
+
+Usando a funçao *dpois*, calculamos o valor de P(X=5)com λ =3.
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+dpois(x = 5, lambda = 3)
+```
+A função *ppois* retorna o valor da prababilidade acumulada avaliada em um X qualquer. No nosso exemplo deﬁnimos X = 5 e λ = 3.
+
+P(X ≤ 5):
+
+
+```{r echo = FALSE}
+
+c= dpois(1:12, lambda = 3)
+barplot(c, 1:12, col= c('forestgreen','forestgreen','forestgreen', 'forestgreen','forestgreen', "8","8","8","8","8","8","8"), main = 'Poisson (3)', ,xlab = "k" , ylab = "P(X=k)")
+```
+No nosso exemplo sobre a etapa de embalagens, se estivéssemos interessados na probabilidade de 5 caixas de leite, ou menos,apresentar defeito, bastaria utilizar o comando *ppois* da seguinte maneira:
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+ppois(q = 5, lambda = 3)
+```
+
+Assim como ﬁzemos com a função *pbinom*, podemos conferir o resultado obtido com a função *ppois* comparando com o resultado obtido com a soma de probabilidades utilizando a função *dpois*. 
+Veja:
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+dpois(x = 5, lambda = 3)+
+dpois(x = 4, lambda = 3)+
+dpois(x = 3, lambda = 3)+ 
+dpois(x = 2, lambda = 3)+
+dpois(x = 1, lambda = 3)+
+dpois(x = 0, lambda = 3)
+
+```
+
+P(X > 5) :
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+ppois(q = 5, lambda = 3, lower.tail = FALSE)
+
+```
+
+A utilização da do parâmetro lower.tail foi devidamente discutida no tópico da função pbinom.
+
+### 5.2.3 Funçao qpois 
+
+Ao utilizar a funçao *qpois* estamos interessados em descobrir os quantis da distribuição Poisson, exemplo: Dado o caso da fábrica de laticínios abordado nos tópicos acima, suponha que queiramos encontrar um número x de caixas de leite onde, em 95% dos casos, a quantidade de itens deformados seja menor do que x. Isso é equivalente a obter o quantil 0.95 da Poison(λ = 3). Utilizamos então, o comando *qpois*:
+
+```{r eco = TRUE, message=FALSE, warning=FALSE}
+qpois(p =0.95, lambda = 3)
+
+```
+O quantil referente ao percentil de ordem 0.95 da Poisson(3) é 6. Ou seja, em 95% dos casos, a produção tem menos do que 6 caixas de leite com defeito.
