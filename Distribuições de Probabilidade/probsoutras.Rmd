@@ -1,0 +1,17 @@
+---
+title: "probabilidade_outras"
+author: "Gabriela, Matheus, Vitor"
+date: "06/05/2020"
+output: html_document
+---
+
+
+# Outras distribuições de probabilidade
+
+O R também nos permite fazer funções análogas para muitas outras distribuições de probabilidade. O funcionamento é quase idêntico ao das anteriores e não entraramos em exemplos e detalhes específicos. Algumas distribuições e funções associadas a elas são:
+
+* Distribuição Geométrica: pgeom, dgeom, qgeom, rgeom 
+* Distribuição Binomial Negativa: pnbinom, dnbinom, qnbinom, rnbinom 
+* Distribuição Hipergeométrica: phyper, dhyper, qhyper, rhyper 
+* Distribuição Qui-Quadrado: pchisq, dchisq, qchisq, rchisq
+* Distribuição T de Student: pt, dt, qt, rt
