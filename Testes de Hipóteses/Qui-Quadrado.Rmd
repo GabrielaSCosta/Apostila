@@ -5,7 +5,7 @@ output: html_document
 ---
 6.3 Qui-Quadrado
 
-Em geral, os testes qui-quadrado são usados para avaliar se há associação entre variáveis qualitativas. Por exemplo, no banco de dados milsa, considere as variáveis civil e instrucao. A variável civil indica o estado civil do indivíduo (1 = solteiro, 2 = casado) e a variável instrução indica o nível de instrução (1 = 1o grau, 2 = 2o grau, 3 = ensino superior). Suponha que você deseja investigar se o estado civil tem alguma influência no nivel de instrução da pessoa. 
+Em geral, os testes qui-quadrado são usados para avaliar se há associação entre variáveis qualitativas. Por exemplo, no banco de dados milsa, que foi extraído da internet usando a função "read.table" (consulte o código abaixo para entender como funciona), considere as variáveis civil e instrucao. A variável civil indica o estado civil do indivíduo (1 = solteiro, 2 = casado) e a variável instrução indica o nível de instrução (1 = 1o grau, 2 = 2o grau, 3 = ensino superior). Suponha que você deseja investigar se o estado civil tem alguma influência no nivel de instrução da pessoa. 
 Para responder a essa pergunta são formuladas as seguintes hipóteses: 
 
 Ho : Estado civil e nivel de instrução são variáveis independentes.
