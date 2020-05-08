@@ -1,0 +1,18 @@
+---
+title: "7_Referencias"
+author: "Gabriela, Matheus, Vitor"
+date: "08/05/2020"
+output: html_document
+---
+
+#7. Referências Bibliográficas
+
+* "R Markdown - The Definitive Guide" - Yihui Xie, J. J. Allaire, Garrett Grolemund, 2020: https://bookdown.org/yihui/rmarkdown/
+* "bookdown: Authoring Books and Technical Documents with R Markdown" - Yihui Xie,2020:
+https://bookdown.org/yihui/bookdown/
+* "Análises em R aplicadas à Bioestatística: Uma introdução ao R" - Caio Coelho, Laura Alexandria, Leonardo Paes - Programa de Monitoria da Graduação, UFMG, 2019.
+
+
+
+
+ 

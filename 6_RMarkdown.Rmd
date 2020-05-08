@@ -1,0 +1,37 @@
+---
+title: "6_RMarkdown"
+author: "Gabriela, Matheus, Vitor"
+date: "08/05/2020"
+output: html_document
+---
+
+# 6. Um pouco sobre R Markdown
+
+R Markdown é a interface do R para a sintaxe de documentos Markdown e permite que escrevamos textos, apresentações, artigos e trabalhos no próprio R, além de possibilitar a inclusão de códigos no R e seus resultados no próprio documento, como puderam ver nessa própria apostila, que foi totalmente construída nessa interface. 
+
+Para construir um documento RMarkdown, devemos ir em:
+
+```
+File > New File > R Markdown 
+
+```
+
+Na janela que abrir, defina se quer uma apresentação (slides) ou texto, e defina autor e título.
+
+O Documento aberto terá alguns parágrafos escritos dando instruções sobre o funcionamento do R Markdown.
+
+## 6.1. Funcionamento básico
+
+- Quando você quiser escrever texto comum, sem código a ser executado, basta escrevê-lo na tela normalmente e sem preocupações.
+- Para usar expressões especiais, como fórmulas e equações, use sifrões antes e depois da expressão, e, caso seja vá usar um caractere não presente no teclado, use a barra invertida e então escreva o caractere desejado.Por exemplo, para $\alpha$ digite:
+
+```
+$\alpha$
+```
+- Para criar um título, use "#", para subtítulos "##". Quanto mais hashtags usar, menor será o destaque dado. (OBS: Numa apresentação, o uso de "#" define um novo slide).
+- Para destacar palavras em negrito, insira "**" antes e depois dessas palavras.
+Caso queira inserir código em R, vá em Insert (acima da tela de edição de texto), e escolha R. Dentro da caixa aberta, digite códigos em R, que, se digitar CTRL+ENTER, serão rodados normalmente. Você também pode escolher se quer que se exiba apenas o resultado ou se o código também deve ser exibido, além de outras configurações (como se avisos devem ser exibidos ou não), clicando na engrenagem no canto superior direito da janela de código.
+
+## 6.2. Gerando um documento.
+
+Para gerar o documento a partir do arquivo markdown, vá em "Knit" acima do editor de texto e selecione o formato desejado (como HTML ou Doc). O arquivo irá aparecer na sua área de trabalho.
