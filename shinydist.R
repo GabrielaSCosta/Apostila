@@ -5,8 +5,20 @@ if(!require(plotly)){install.packages("plotly");library(plotly)}
 
 ui <- fluidPage(
   titlePanel("Distribuições de probabilidade"),
-  helpText("Este app foi desenvolvido em maio de 2020 por monitores de estatística do
-           projeto de monitoria de graduação da UFMG"),
+  helpText("Este app foi desenvolvido em maio de 2020 por Gabriela Costa, Matheus Gonzaga e Vitor Batista,
+    monitores de estatística do
+           projeto de monitoria de graduação da UFMG."),
+  helpText("Nele, você escolhe uma distribuição de probabilidade e seus parâmetros
+             para que seja gerada uma amostra dela, de tamanho também mutável.
+             A partir da amostra, criamos um histograma (no painel à direita), com número
+             de classes a sua escolha, e mostramos a densidade esperada para o histograma
+             em cada ponto(isto é, o valor da função densidade de probabilidade ou a probabilidade
+             naquele ponto), para que possamos verificar o quão próximo está o histograma.
+             Observe que, quanto maior a amostra, mais próximos tendem a ser o hitograma e
+             essa função. Também colocamos, como barras verticais, a média da nossa amostra
+             e a média da distribuição(que é o valor esperado da média amostral). Abaixo do gráfico
+             está escrita a distância entre a média populacional e a amostral para a amostra em questão.
+             Observe que quanto maior o tamanho das amostras, menor tende a ser essa distância."),
   helpText("Observação: Utilizar amostras muito grandes ou criar muitas classes
     para o histograma pode ocasionar em travamentos"),
   sidebarLayout(
@@ -143,3 +155,4 @@ server <- function(input,output,session){
 
 
 shinyApp(ui=ui,server=server)
+

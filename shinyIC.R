@@ -8,6 +8,21 @@ if(!require(DT)){install.packages("DT");library(DT)}
 
 ui <- fluidPage(
   titlePanel("Intervalos de confiança para médias"),
+  helpText("Este app foi desenvolvido em maio de 2020 por Gabriela Costa, Matheus Gonzaga e Vitor Batista,
+    monitores de estatística do
+           projeto de monitoria de graduação da UFMG."),
+  helpText("Nele, você pode gerar quantas amostras quiser de uma distribuição de sua escolha com parâmetros e tamanho também
+             definidos por você, depois construindo intervalos de confiança com o nível de confiança desejado,
+             e à direita os visualizar em um gráfico (barras são os limites do intervalo e o ponto vermelho a estimativa pontual), o que nos permite verificar se ele 'acertou' ou não
+             a partir da análise de se o mesmo contém a média da distribuição (cortar a linha horizontal).
+             Abaixo do gráfico, podemos ver que há o percentual de acerto global dos intervalos gerados.
+             Por definição, quando geramos muitos intervalos em condições adequadas*, o percentual de acerto tenderá ao
+             nível de confiança escolhido.
+             Há também uma tabela na qual podemos ver os limites e ponto médio de cada um dos IC."),
+  helpText("* Os intervalos de confiança aqui são feitos a partir da distribuição t de student, adequada especialmente 
+             para dados com distribuição normal e utilizando variância amostral. Entretanto, pelo teorema central do limite e a 
+             aproximação da t pela normal, em caso de amostras grandes de qualquer distribuição, o intervalo é funcional. Testar o que
+             acontece ao gerar amsotras pequenas de diversas distribuições é uma ideia interessante."),
   helpText("Observação: Criar muitos intervalos ou utilizar amostras muito grandes pode 
            ocasionar em travamentos"),
   sidebarLayout(
@@ -127,10 +142,3 @@ server <- function(input,output,session){
 
 
 shinyApp(ui=ui,server=server)
-
-
-
-
-
-
-
