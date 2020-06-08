@@ -1,4 +1,5 @@
 if(!require(shiny)){install.packages("shiny");library(shiny)} 
+if(!require(shinydashboard)){install.packages("shinydashboard");library(shiny)} 
 if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)} 
 if(!require(plotly)){install.packages("plotly");library(plotly)} 
 if(!require(DT)){install.packages("DT");library(DT)} 
@@ -142,3 +143,4 @@ server <- function(input,output,session){
 
 
 shinyApp(ui=ui,server=server)
+
